@@ -8,11 +8,44 @@
 ![Performance Architecture](report-resources/performance-architecture.jpg)
 
 
-### Cenarios
+### Scenarios
 
 To answer an available quizz, 1000 student users start the quiz, submit answers to the questions and conclude the quiz. The quizzes tutor saves each answer and the conclusion with a maximum latency of 200ms, with a throughput of 1000/sec, with 0% of miss rate.
 
 ### Tests
+
+[Get quiz with code](backend/jmeter/answer/get-quizzes.jmx)
+
+* The teacher logs in, creates the questions and makes the quiz
+* 1000 students log in
+* After everyone logs in, the teacher populates the quiz
+* Then each student enters the code to get the quiz
+
+#### Results:
+
+This first test tried to simulate a real scenario where multiple students insert the code for the quiz at a random time between 1s and 10s. (Bigger intervals where tested and they gave similar results)
+
+* 300 students
+![300 Students at a random time 1s-10s](report-resources/performance-getquiz-300_rt.png)
+* 600 students
+![600 Students at a random time 1s-10s](report-resources/performance-getquiz-600_rt.png)
+* 1000 students
+![1000 Students at a random time 1s-10s](report-resources/performance-getquiz-1000_rt.png)
+
+With this tests we can conclude that at least until 1000 students, the average time taken to get the quiz is independent of the number of students.
+
+
+This second test tried to simulate a limit scenario where all the students insert the code at the same time (This test uses a synchronizing timer to make sure that all threads are created before the get quiz sample starts)
+
+* 300 students
+![300 Students at the same time](report-resources/performance-getquiz-300_st.png)
+* 600 students
+![600 Students at the same time](report-resources/performance-getquiz-600_st.png)
+* 1000 students
+![1000 Students at the same time](report-resources/performance-getquiz-1000_st.png)
+
+This time we can see that the average time it takes to get a quiz is proportional to the number of students. 
+
 
 [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx)
 

@@ -66,7 +66,7 @@
           </elementProp>
           <elementProp name="students" elementType="Argument">
             <stringProp name="Argument.name">students</stringProp>
-            <stringProp name="Argument.value">1000</stringProp>
+            <stringProp name="Argument.value">600</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -763,9 +763,14 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Random Timer" enabled="false">
-            <stringProp name="ConstantTimer.delay">${__Random(1, 35000)}</stringProp>
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Random Timer" enabled="true">
+            <stringProp name="ConstantTimer.delay">${__Random(1000, 10000)}</stringProp>
           </ConstantTimer>
+          <hashTree/>
+          <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Synchronizing Timer" enabled="false">
+            <intProp name="groupSize">0</intProp>
+            <longProp name="timeoutInMs">0</longProp>
+          </SyncTimer>
           <hashTree/>
         </hashTree>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
