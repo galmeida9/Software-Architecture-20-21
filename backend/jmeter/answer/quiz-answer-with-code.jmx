@@ -420,7 +420,7 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${students}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">60</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">30</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
@@ -735,13 +735,13 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Synchronizing Timer" enabled="false">
+          <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Synchronizing Timer" enabled="true">
             <intProp name="groupSize">0</intProp>
             <longProp name="timeoutInMs">0</longProp>
           </SyncTimer>
           <hashTree/>
           <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Random Timer" enabled="false">
-            <stringProp name="ConstantTimer.delay">${__Random(1, 35000)}</stringProp>
+            <stringProp name="ConstantTimer.delay">${__Random(1000, 10000)}</stringProp>
           </ConstantTimer>
           <hashTree/>
           <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Get quiz answer id" enabled="true">
@@ -798,7 +798,7 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
               <stringProp name="ConstantTimer.delay">${__Random(1, 1000)}</stringProp>
             </ConstantTimer>
             <hashTree/>
-            <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
+            <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="false">
               <stringProp name="ConstantTimer.delay">35000</stringProp>
               <stringProp name="RandomTimer.range">5000</stringProp>
             </GaussianRandomTimer>
