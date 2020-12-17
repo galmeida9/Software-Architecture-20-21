@@ -10,6 +10,7 @@
 ### Scenarios
 
 **1)** After the login and within a period of 10s, <num> student users make a request stochasticly by inserting a code to get access to the quiz. The Quizzes Tutor, in normal operation, sends the quiz's questions to each user in less than <x> seconds/miliseconds.
+
 **2)** After accessing the quiz, <num> students wait until the of the timer to start the quiz. All the students answer to the questions following a normal distribution and in the end conclude the quiz. The quizzes tutor receives the answers and the and final submissions and saves, for each student, this information in a database in less than <x> seconds/miliseconds.
   
 
