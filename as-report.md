@@ -4,8 +4,7 @@
 
 ### Architecture
 
-**TODO**: Try making process more data driven and split quizAnswerItem
-![Performance Architecture](report-resources/performance-architecture.jpg)
+![Performance Architecture](report-resources/performance-architecture.png)
 
 
 ### Scenarios
