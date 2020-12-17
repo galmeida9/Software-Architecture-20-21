@@ -31,9 +31,7 @@ This first test tried to simulate a real scenario where multiple students insert
 * 1000 students
 ![1000 Students at a random time 1s-10s](report-resources/performance-getquiz-1000_rt.png)
 
-**Conclusions:**
-
-With this tests we can conclude that at least until 1000 students, the average time taken to get the quiz is independent of the number of students.
+**Conclusions:** With this tests we can conclude that at least until 1000 students, the average time taken to get the quiz is independent of the number of students.
 
 
 This second test tried to simulate a limit scenario where all the students insert the code at the same time (This test uses a synchronizing timer to make sure that all threads are created before the get quiz sample starts)
