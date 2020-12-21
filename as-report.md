@@ -89,3 +89,7 @@ In this test, we tried to simulate an unrealistic scenario where all the student
 In this second test, we can see that the average times in the process of answering a quiz are proportional to the number of students but not as much as in the get quiz test. This time, even with 1000 students answering at the same time, the average is below 1s.
 
 So with all this tests, we can conclude that the system that already exists achieves the performance desired to fulfill the requirement of having 1000 students answering a quiz using a code, previously populated with answers.
+
+![Performance chart](report-resources/performance_chart.png)
+
+In the chart above we can observe that the performance almost follows a linear distribution, even for high number of simultaneous users.
