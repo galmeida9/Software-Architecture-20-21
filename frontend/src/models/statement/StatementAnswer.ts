@@ -11,6 +11,7 @@ export default class StatementAnswer {
   public quizQuestionId!: number;
   public userDiscussion?: Discussion;
   public timeToSubmission: number | null = null;
+  public username: string = "";
 
   answerDetails: StatementAnswerDetails = new MultipleChoiceStatementAnswerDetails();
 

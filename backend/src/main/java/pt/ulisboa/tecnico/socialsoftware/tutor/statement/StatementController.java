@@ -60,13 +60,13 @@ public class StatementController {
         return statementService.getQuizByQRCode(user.getId(), quizId);
     }
 
-    @PostMapping("/quizzes/{quizId}/submit")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public void submitAnswer(Principal principal, @PathVariable int quizId, @Valid @RequestBody StatementAnswerDto answer) {
-        User user = (User) ((Authentication) principal).getPrincipal();
-
-        statementService.submitAnswer(user.getUsername(), quizId, answer);
-    }
+    // @PostMapping("/quizzes/{quizId}/submit")
+    // @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
+    // public void submitAnswer(Principal principal, @PathVariable int quizId, @Valid @RequestBody StatementAnswerDto answer) {
+    //     User user = (User) ((Authentication) principal).getPrincipal();
+    //
+    //     statementService.submitAnswer(user.getUsername(), quizId, answer);
+    // }
 
     @GetMapping("/quizzes/{quizId}/start")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
@@ -76,11 +76,11 @@ public class StatementController {
         return statementService.startQuiz(user.getId(), quizId);
     }
 
-    @PostMapping("/quizzes/{quizId}/conclude")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public List<CorrectAnswerDto> concludeQuiz(Principal principal, @PathVariable int quizId, @RequestBody StatementQuizDto statementQuizDto) {
-        User user = (User) ((Authentication) principal).getPrincipal();
-
-        return statementService.concludeQuiz(statementQuizDto);
-    }
+    // @PostMapping("/quizzes/{quizId}/conclude")
+    // @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
+    // public List<CorrectAnswerDto> concludeQuiz(Principal principal, @PathVariable int quizId, @RequestBody StatementQuizDto statementQuizDto) {
+    //     User user = (User) ((Authentication) principal).getPrincipal();
+    //
+    //     return statementService.concludeQuiz(statementQuizDto);
+    // }
 }

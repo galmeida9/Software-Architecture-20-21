@@ -54,6 +54,39 @@ httpClient.interceptors.response.use(
   error => Promise.reject(error)
 );
 
+const httpClient2 = axios.create();
+httpClient2.defaults.timeout = 100000;
+httpClient2.defaults.baseURL =
+  process.env.VUE_APP_ROOT_API || 'http://localhost:8079';
+httpClient2.defaults.headers.post['Content-Type'] = 'application/json';
+httpClient2.interceptors.request.use(
+  config => {
+    if (!config.headers.Authorization) {
+      const token = Store.getters.getToken;
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  error => Promise.reject(error)
+);
+httpClient2.interceptors.response.use(
+  response => {
+    if (response.data.notification) {
+      if (response.data.notification.errorMessages.length)
+        Store.dispatch(
+          'notification',
+          response.data.notification.errorMessages
+        );
+      response.data = response.data.response;
+    }
+    return response;
+  },
+  error => Promise.reject(error)
+);
+
 export default class RemoteServices {
   static async fenixLogin(code: string): Promise<AuthDto> {
     return httpClient
@@ -393,7 +426,7 @@ export default class RemoteServices {
   }
 
   static submitAnswer(quizId: number, answer: StatementAnswer) {
-    httpClient.post(`/quizzes/${quizId}/submit`, answer).catch(error => {
+    httpClient2.post(`/quizzes/${quizId}/submit`, answer).catch(error => {
       console.debug(error);
     });
   }
@@ -402,7 +435,7 @@ export default class RemoteServices {
     statementQuiz: StatementQuiz
   ): Promise<StatementCorrectAnswer[]> {
     let sendStatement = { ...statementQuiz, questions: [] };
-    return httpClient
+    return httpClient2
       .post(`/quizzes/${statementQuiz.id}/conclude`, sendStatement)
       .then(response => {
         if (response.data) {

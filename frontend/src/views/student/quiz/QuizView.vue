@@ -202,6 +202,7 @@ export default class QuizView extends Vue {
 
         if (!!this.statementQuiz && this.statementQuiz.timed) {
           newAnswer.timeToSubmission = this.statementQuiz.timeToSubmission;
+          newAnswer.username = this.$store.getters.getUser.username;
           RemoteServices.submitAnswer(this.statementQuiz.id, newAnswer);
         }
       } catch (error) {
