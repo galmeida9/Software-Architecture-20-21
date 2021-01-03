@@ -46,6 +46,5 @@ public class ImportExportController {
     public void importAll() {
         logger.debug("importAll");
 
-        impExpService.importAll();
     }
 }

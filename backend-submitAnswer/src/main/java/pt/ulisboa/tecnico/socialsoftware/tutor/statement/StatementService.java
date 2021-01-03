@@ -28,8 +28,8 @@ public class StatementService {
       value = { SQLException.class },
       backoff = @Backoff(delay = 2000))
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public List<CorrectAnswerDto> concludeQuiz(StatementQuizDto statementQuizDto) {
-        return answerService.concludeQuiz(statementQuizDto);
+    public void concludeQuiz(StatementQuizDto statementQuizDto) {
+        answerService.concludeQuiz(statementQuizDto);
     }
 
     @Retryable(

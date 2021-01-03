@@ -22,16 +22,14 @@ public class StatementController {
     private StatementService statementService;
 
     @PostMapping("/quizzes/{quizId}/submit")
-    // @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public void submitAnswer(Principal principal, @PathVariable int quizId, @Valid @RequestBody StatementAnswerDto answer) {
+    public void submitAnswer(@PathVariable int quizId, @Valid @RequestBody StatementAnswerDto answer) {
         String username = answer.getUsername();
 
         statementService.submitAnswer(username, quizId, answer);
     }
 
     @PostMapping("/quizzes/{quizId}/conclude")
-    // @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public List<CorrectAnswerDto> concludeQuiz(Principal principal, @PathVariable int quizId, @RequestBody StatementQuizDto statementQuizDto) {
-        return statementService.concludeQuiz(statementQuizDto);
+    public void concludeQuiz(@PathVariable int quizId, @RequestBody StatementQuizDto statementQuizDto) {
+        statementService.concludeQuiz(statementQuizDto);
     }
 }

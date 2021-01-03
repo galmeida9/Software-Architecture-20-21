@@ -121,38 +121,5 @@ public class CourseController {
     public CourseDto deleteExternalInactiveUsers(@PathVariable Integer executionId, @Valid @RequestBody List<Integer> usersIds) {
         return courseService.deleteExternalInactiveUsers(executionId, usersIds);
     }
-
-    @GetMapping(value = "/executions/{executionId}/export")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_DEMO_ADMIN') and hasPermission(#executionId, 'DEMO.ACCESS')) or (hasRole('ROLE_TEACHER') and hasPermission(#executionId, 'EXECUTION.ACCESS'))")
-    public void exportCourseExecutionInfo(HttpServletResponse response, @PathVariable Integer executionId) throws IOException {
-        List<Quiz> courseExecutionQuizzes = quizRepository.findQuizzesOfExecution(executionId);
-        response.setHeader("Content-Disposition", "attachment; filename=file.tar.gz");
-        response.setContentType("application/tar.gz");
-        String sourceFolder = exportDir + "/quizzes-" + executionId;
-        File file = new File(sourceFolder);
-        file.mkdir();
-        for (Quiz quiz : courseExecutionQuizzes) {
-            answerService.writeQuizAnswers(quiz.getId());
-            this.quizService.createQuizXmlDirectory(quiz.getId(), sourceFolder);
-        }
-        TarGZip tGzipDemo = new TarGZip(sourceFolder);
-        tGzipDemo.createTarFile();
-        response.getOutputStream().write(Files.readAllBytes(Paths.get(sourceFolder + ".tar.gz")));
-        response.flushBuffer();
-
-        deleteDirectory(file);
-        deleteDirectory(new File(sourceFolder + ".tar.gz"));
-    }
-
-    boolean deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        return directoryToBeDeleted.delete();
-    }
-
 }
 

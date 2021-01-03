@@ -49,46 +49,9 @@ public class QuizController {
         return this.quizService.updateQuiz(quizId, quiz);
     }
 
-    @PostMapping("/quizzes/{quizId}/populate")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public QuizDto populateWithQuizAnswers(@PathVariable Integer quizId) {
-        return this.quizService.populateWithQuizAnswers(quizId);
-    }
-
-    @PostMapping("/quizzes/{quizId}/write")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public void writeQuizAnswers(@PathVariable Integer quizId) {
-        this.answerService.writeQuizAnswers(quizId);
-    }
-
-    @PostMapping("/quizzes/{quizId}/unpopulate")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public QuizDto removeNonFilledQuizAnswers(@PathVariable Integer quizId) {
-        return this.quizService.removeNonFilledQuizAnswers(quizId);
-    }
-
     @DeleteMapping("/quizzes/{quizId}")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#quizId, 'QUIZ.ACCESS')")
     public void deleteQuiz(@PathVariable Integer quizId) {
         quizService.removeQuiz(quizId);
-    }
-
-    @GetMapping(value = "/quizzes/{quizId}/export")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public void exportQuiz(HttpServletResponse response, @PathVariable Integer quizId) throws IOException {
-        answerService.writeQuizAnswers(quizId);
-
-        response.setHeader("Content-Disposition", "attachment; filename=file.zip");
-        response.setContentType("application/zip");
-        response.getOutputStream().write(this.quizService.exportQuiz(quizId).toByteArray());
-
-        response.flushBuffer();
-    }
-
-    @GetMapping("/quizzes/{quizId}/answers")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public QuizAnswersDto getQuizAnswers(@PathVariable Integer quizId) {
-        answerService.writeQuizAnswers(quizId);
-        return this.quizService.getQuizAnswers(quizId);
     }
 }

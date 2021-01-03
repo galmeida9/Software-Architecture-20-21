@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Entity
-@Table(name = "question_answer_items_0",
+@Table(name = "question_answer_items",
         indexes = {
-                @Index(name = "question_answer_items_0_indx_0", columnList = "quiz_id"),
+                @Index(name = "question_answer_items_indx_0", columnList = "quiz_id"),
         })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "question_answer_type",

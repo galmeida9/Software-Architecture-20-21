@@ -56,8 +56,7 @@ httpClient.interceptors.response.use(
 
 const httpClient2 = axios.create();
 httpClient2.defaults.timeout = 100000;
-httpClient2.defaults.baseURL =
-  process.env.VUE_APP_ROOT_API || 'http://localhost:8079';
+httpClient2.defaults.baseURL = 'http://localhost:8079';
 httpClient2.defaults.headers.post['Content-Type'] = 'application/json';
 httpClient2.interceptors.request.use(
   config => {
@@ -435,7 +434,7 @@ export default class RemoteServices {
     statementQuiz: StatementQuiz
   ): Promise<StatementCorrectAnswer[]> {
     let sendStatement = { ...statementQuiz, questions: [] };
-    return httpClient2
+    return httpClient
       .post(`/quizzes/${statementQuiz.id}/conclude`, sendStatement)
       .then(response => {
         if (response.data) {
@@ -444,6 +443,15 @@ export default class RemoteServices {
           });
         }
       })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async concludeTimedQuiz(statementQuiz: StatementQuiz){
+    let sendStatement = { ...statementQuiz, questions: [] };
+    return httpClient2
+      .post(`/quizzes/${statementQuiz.id}/conclude`, sendStatement)
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });

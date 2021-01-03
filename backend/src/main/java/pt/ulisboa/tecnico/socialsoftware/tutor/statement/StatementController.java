@@ -76,11 +76,19 @@ public class StatementController {
         return statementService.startQuiz(user.getId(), quizId);
     }
 
-    // @PostMapping("/quizzes/{quizId}/conclude")
-    // @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    // public List<CorrectAnswerDto> concludeQuiz(Principal principal, @PathVariable int quizId, @RequestBody StatementQuizDto statementQuizDto) {
-    //     User user = (User) ((Authentication) principal).getPrincipal();
-    //
-    //     return statementService.concludeQuiz(statementQuizDto);
-    // }
+     @PostMapping("/quizzes/{quizId}/conclude")
+     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
+     public List<CorrectAnswerDto> concludeQuiz(Principal principal, @PathVariable int quizId, @RequestBody StatementQuizDto statementQuizDto) {
+         User user = (User) ((Authentication) principal).getPrincipal();
+
+         return statementService.concludeQuiz(statementQuizDto);
+     }
+
+    @GetMapping("/quizzes/{quizId}/concludeTimed")
+//    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
+    public boolean concludeTimedQuiz(Principal principal, @PathVariable int quizId) {
+//        User user = (User) ((Authentication) principal).getPrincipal();
+
+        return statementService.concludeTimedQuiz(quizId);
+    }
 }

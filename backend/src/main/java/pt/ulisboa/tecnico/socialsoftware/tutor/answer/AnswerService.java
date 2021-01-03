@@ -80,8 +80,44 @@ public class AnswerService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<CorrectAnswerDto> concludeQuiz(StatementQuizDto statementQuizDto) {
-        QuizAnswer quizAnswer = quizAnswerRepository.findById(statementQuizDto.getQuizAnswerId())
-                .orElseThrow(() -> new TutorException(QUIZ_ANSWER_NOT_FOUND, statementQuizDto.getId()));
+        QuizAnswer quizAnswer = checkQuiz(statementQuizDto.getQuizAnswerId());
+
+        if (!quizAnswer.isCompleted()) {
+            quizAnswer.setCompleted(true);
+            quizAnswer.setAnswerDate(DateHandler.now());
+
+            for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
+                writeQuestionAnswer(questionAnswer, statementQuizDto.getAnswers());
+            }
+            return quizAnswer.getQuestionAnswers().stream()
+                    .sorted(Comparator.comparing(QuestionAnswer::getSequence))
+                    .map(CorrectAnswerDto::new)
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+    @Retryable(
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean concludeTimedQuiz(int quizAnswerId) {
+        try {
+            QuizAnswer quizAnswer = checkQuiz(quizAnswerId);
+
+            if (!quizAnswer.isCompleted()) {
+                quizAnswer.setCompleted(true);
+            }
+        } catch (TutorException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public QuizAnswer checkQuiz(int quizAnswerId) {
+        QuizAnswer quizAnswer = quizAnswerRepository.findById(quizAnswerId)
+                .orElseThrow(() -> new TutorException(QUIZ_ANSWER_NOT_FOUND, quizAnswerId));
 
         if (quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(DateHandler.now())) {
             throw new TutorException(QUIZ_NOT_YET_AVAILABLE);
@@ -91,25 +127,7 @@ public class AnswerService {
             throw new TutorException(QUIZ_NO_LONGER_AVAILABLE);
         }
 
-        if (!quizAnswer.isCompleted()) {
-            quizAnswer.setCompleted(true);
-
-            if (quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS)) {
-                QuizAnswerItem quizAnswerItem = new QuizAnswerItem(statementQuizDto);
-                quizAnswerItemRepository.save(quizAnswerItem);
-            } else {
-                quizAnswer.setAnswerDate(DateHandler.now());
-
-                for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
-                    writeQuestionAnswer(questionAnswer, statementQuizDto.getAnswers());
-                }
-                return quizAnswer.getQuestionAnswers().stream()
-                        .sorted(Comparator.comparing(QuestionAnswer::getSequence))
-                        .map(CorrectAnswerDto::new)
-                        .collect(Collectors.toList());
-            }
-        }
-        return new ArrayList<>();
+        return quizAnswer;
     }
 
     @Retryable(

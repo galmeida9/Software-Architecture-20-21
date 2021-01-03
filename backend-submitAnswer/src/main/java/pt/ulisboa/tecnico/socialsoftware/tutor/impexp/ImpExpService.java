@@ -73,6 +73,12 @@ public class ImpExpService {
     @Autowired
     private QuizService quizService;
 
+    @Autowired
+    private AnswerService answerService;
+
+    @Autowired
+    private AnswersXmlImport answersXmlImport;
+
     @Value("${load.dir}")
     private String loadDir;
 
@@ -158,36 +164,4 @@ public class ImpExpService {
         return IOUtils.toInputStream(generator.export(quizAnswerRepository.findAll()), StandardCharsets.UTF_8);
     }
 
-
-    @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void importAll() {
-        if (userRepository.findAll().isEmpty()) {
-            try {
-                File directory = new File(loadDir);
-
-                File usersFile = new File(directory.getPath() + PATH_DELIMITER + "users.xml");
-                UsersXmlImport usersXmlImport = new UsersXmlImport();
-                usersXmlImport.importUsers(new FileInputStream(usersFile), userService);
-
-                File questionsFile = new File(directory.getPath() + PATH_DELIMITER + "questions.xml");
-                QuestionsXmlImport questionsXmlImport = new QuestionsXmlImport();
-                questionsXmlImport.importQuestions(new FileInputStream(questionsFile), questionService, courseRepository);
-
-                File topicsFile = new File(directory.getPath() + PATH_DELIMITER + "topics.xml");
-                TopicsXmlImport topicsXmlImport = new TopicsXmlImport();
-                topicsXmlImport.importTopics(new FileInputStream(topicsFile), topicService, questionService, courseRepository);
-
-                File quizzesFile = new File(directory.getPath() + PATH_DELIMITER + "quizzes.xml");
-                QuizzesXmlImport quizzesXmlImport = new QuizzesXmlImport();
-                quizzesXmlImport.importQuizzes(new FileInputStream(quizzesFile), quizService, questionRepository, quizQuestionRepository, courseRepository);
-
-                File answersFile = new File(directory.getPath() + PATH_DELIMITER + "answers.xml");
-            } catch (FileNotFoundException e) {
-                throw new TutorException(ErrorMessage.CANNOT_OPEN_FILE);
-            }
-        }
-    }
 }

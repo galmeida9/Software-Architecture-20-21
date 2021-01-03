@@ -156,23 +156,6 @@ public class UserService {
         xmlImporter.importUsers(usersXML, this);
     }
 
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void resetDemoStudents() {
-        userRepository.findAll()
-                .stream()
-                .filter(user -> user.getAuthUser().isDemoStudent())
-                .forEach(user -> {
-                    for (QuizAnswer quizAnswer : new ArrayList<>(user.getQuizAnswers())) {
-                        answerService.deleteQuizAnswer(quizAnswer);
-                    }
-
-                    this.userRepository.delete(user);
-                });
-    }
-
     @Transactional(isolation = Isolation.READ_COMMITTED,
             propagation = Propagation.REQUIRED)
     public NotificationResponse<CourseDto> registerListOfUsersTransactional(InputStream stream, int courseExecutionId) {

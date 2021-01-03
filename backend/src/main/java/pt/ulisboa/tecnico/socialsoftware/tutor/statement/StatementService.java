@@ -257,6 +257,14 @@ public class StatementService {
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 2000))
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean concludeTimedQuiz(int quizAnswerId) {
+        return answerService.concludeTimedQuiz(quizAnswerId);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 2000))
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void submitAnswer(String username, int quizId, StatementAnswerDto answer) {
         if (answer.getTimeToSubmission() == null) {
