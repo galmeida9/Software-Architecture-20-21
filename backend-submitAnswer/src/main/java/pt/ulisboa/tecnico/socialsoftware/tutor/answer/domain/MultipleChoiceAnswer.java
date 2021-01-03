@@ -2,7 +2,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.MultipleChoiceQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
@@ -91,10 +90,5 @@ public class MultipleChoiceAnswer extends AnswerDetails {
     @Override
     public StatementAnswerDetailsDto getStatementAnswerDetailsDto() {
         return new MultipleChoiceStatementAnswerDetailsDto(this);
-    }
-
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitAnswerDetails(this);
     }
 }

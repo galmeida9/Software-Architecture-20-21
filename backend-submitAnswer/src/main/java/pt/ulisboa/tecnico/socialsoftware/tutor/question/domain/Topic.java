@@ -2,8 +2,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.domain.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 
 import javax.persistence.*;
@@ -13,7 +11,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.IN
 
 @Entity
 @Table(name = "topics")
-public class Topic implements DomainEntity {
+public class Topic {
     public enum Status {
         DISABLED, REMOVED, AVAILABLE
     }
@@ -41,11 +39,6 @@ public class Topic implements DomainEntity {
     public Topic(Course course, TopicDto topicDto) {
         setName(topicDto.getName());
         setCourse(course);
-    }
-
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitTopic(this);
     }
 
     public Integer getId() {

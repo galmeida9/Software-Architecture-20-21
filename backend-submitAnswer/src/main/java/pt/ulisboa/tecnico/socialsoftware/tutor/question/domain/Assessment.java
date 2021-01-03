@@ -2,10 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.domain.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.AssessmentDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,7 +14,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.IN
 
 @Entity
 @Table(name = "assessments")
-public class Assessment implements DomainEntity {
+public class Assessment {
     public enum Status {
         DISABLED, AVAILABLE, REMOVED
     }
@@ -51,12 +48,6 @@ public class Assessment implements DomainEntity {
         setCourseExecution(courseExecution);
         setTopicConjunctions(topicConjunctions);
     }
-
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitAssessment(this);
-    }
-
 
     public Integer getId() {
         return id;

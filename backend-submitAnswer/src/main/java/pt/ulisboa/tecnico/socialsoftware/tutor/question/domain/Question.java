@@ -7,8 +7,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.domain.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDetailsDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
@@ -27,7 +25,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Entity
 @Table(name = "questions")
-public class Question implements DomainEntity {
+public class Question {
     public enum Status {
         DISABLED, REMOVED, AVAILABLE, SUBMITTED
     }
@@ -290,11 +288,6 @@ public class Question implements DomainEntity {
 
         getTopics().forEach(topic -> topic.getQuestions().remove(this));
         getTopics().clear();
-    }
-
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitQuestion(this);
     }
 
     public QuestionDetails getQuestionDetails() {

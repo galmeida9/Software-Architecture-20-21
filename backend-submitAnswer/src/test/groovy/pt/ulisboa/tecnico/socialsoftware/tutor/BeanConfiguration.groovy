@@ -11,17 +11,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
 
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseService
-
 import pt.ulisboa.tecnico.socialsoftware.tutor.mailer.Mailer
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.AssessmentService
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.TournamentService
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.StatementService
-import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.DiscussionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.QuestionSubmissionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService
+
 
 @TestConfiguration
 @PropertySource("classpath:application-test.properties")

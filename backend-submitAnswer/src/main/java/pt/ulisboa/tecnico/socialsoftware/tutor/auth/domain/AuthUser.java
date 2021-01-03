@@ -4,9 +4,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 
 import javax.persistence.*;
@@ -14,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -26,7 +22,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="auth_type",
         discriminatorType = DiscriminatorType.STRING)
-public abstract class AuthUser implements DomainEntity, UserDetails {
+public abstract class AuthUser implements UserDetails {
     public enum Type { EXTERNAL, TECNICO, DEMO }
 
     @Id
@@ -50,7 +46,6 @@ public abstract class AuthUser implements DomainEntity, UserDetails {
     public AuthUser(User user, String username, String email) {
         setUser(user);
         setUsername(username);
-        setEmail(email);
     }
 
     public static AuthUser createAuthUser(User user, String username, String email, Type type) {
@@ -95,13 +90,6 @@ public abstract class AuthUser implements DomainEntity, UserDetails {
         return email;
     }
 
-    public void setEmail(String email) {
-        if (email == null || !email.matches(UserService.MAIL_FORMAT))
-            throw new TutorException(INVALID_EMAIL, email);
-
-        this.email = email;
-    }
-
     @Override
     public String getPassword() {
         return password;
@@ -137,11 +125,6 @@ public abstract class AuthUser implements DomainEntity, UserDetails {
 
 
 
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitAuthUser(this);
-    }
- 
     public boolean isDemoStudent() {
         return false;
     }

@@ -2,8 +2,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.course.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Assessment;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
@@ -23,7 +21,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Entity
 @Table(name = "course_executions")
-public class CourseExecution implements DomainEntity {
+public class CourseExecution {
     public enum Status {ACTIVE, INACTIVE, HISTORIC}
 
     @Id
@@ -76,11 +74,6 @@ public class CourseExecution implements DomainEntity {
         setStatus(Status.ACTIVE);
         setEndDate(endDate);
 
-    }
-
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitCourseExecution(this);
     }
 
     public Integer getId() {

@@ -5,7 +5,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.CorrectAnswerDetailsDt
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MultipleChoiceAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MultipleChoiceCorrectAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.Updator;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.MultipleChoiceQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
@@ -102,17 +101,6 @@ public class MultipleChoiceQuestion extends QuestionDetails {
                 return "D";
             default:
                 return "X";
-        }
-    }
-
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitQuestionDetails(this);
-    }
-
-    public void visitOptions(Visitor visitor) {
-        for (Option option : this.getOptions()) {
-            option.accept(visitor);
         }
     }
 

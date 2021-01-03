@@ -43,19 +43,4 @@ public class AuthController {
             throw new TutorException(INVALID_LOGIN_CREDENTIALS);
         }
     }
-
-    @GetMapping("/auth/demo/student")
-    public AuthDto demoStudentAuth(@RequestParam Boolean createNew) {
-        return this.authUserService.demoStudentAuth(createNew);
-    }
-
-    @GetMapping("/auth/demo/teacher")
-    public AuthDto demoTeacherAuth() {
-        return this.authUserService.demoTeacherAuth();
-    }
-
-    @GetMapping("/auth/demo/admin")
-    public AuthDto demoAdminAuth() {
-        return this.authUserService.demoAdminAuth();
-    }
 }

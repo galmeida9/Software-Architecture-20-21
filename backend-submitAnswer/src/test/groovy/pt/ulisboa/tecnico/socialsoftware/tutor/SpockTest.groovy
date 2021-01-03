@@ -15,12 +15,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.domain.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.domain.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.repository.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.repository.CourseRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseService
-import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.DiscussionService
+
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.repository.DiscussionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.repository.ReplyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.mailer.Mailer
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.AssessmentService
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.TournamentService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.repository.TournamentRepository
@@ -32,10 +30,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.QuestionAnswerItemRepository
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.StatementService
-import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.QuestionSubmissionService
+
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.repository.ReviewRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService
 
 import spock.lang.Shared
 

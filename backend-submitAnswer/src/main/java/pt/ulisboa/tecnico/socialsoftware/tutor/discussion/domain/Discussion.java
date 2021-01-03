@@ -5,8 +5,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.domain.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.dto.DiscussionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 
@@ -21,7 +19,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Entity
 @Table(name = "discussions")
-public class Discussion implements DomainEntity {
+public class Discussion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -188,8 +186,4 @@ public class Discussion implements DomainEntity {
         }
     }
 
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitDiscussion(this);
-    }
 }

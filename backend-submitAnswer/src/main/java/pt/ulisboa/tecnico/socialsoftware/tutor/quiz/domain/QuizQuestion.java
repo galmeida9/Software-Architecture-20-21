@@ -2,8 +2,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 
 import javax.persistence.*;
@@ -14,7 +12,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QU
 
 @Entity
 @Table(name="quiz_questions")
-public class QuizQuestion implements DomainEntity {
+public class QuizQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -39,11 +37,6 @@ public class QuizQuestion implements DomainEntity {
         setQuiz(quiz);
         setQuestion(question);
         setSequence(sequence);
-    }
-
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitQuizQuestion(this);
     }
 
     public Quiz getQuiz() {

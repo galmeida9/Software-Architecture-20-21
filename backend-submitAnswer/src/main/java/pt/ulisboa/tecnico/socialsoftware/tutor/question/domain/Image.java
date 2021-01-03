@@ -1,8 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ImageDto;
 
 import javax.persistence.*;
@@ -11,7 +9,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.IN
 
 @Entity
 @Table(name = "images")
-public class Image implements DomainEntity {
+public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -34,11 +32,6 @@ public class Image implements DomainEntity {
 
     public Image(String url) {
         setUrl(url);
-    }
-
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitImage(this);
     }
 
     public Integer getId() {

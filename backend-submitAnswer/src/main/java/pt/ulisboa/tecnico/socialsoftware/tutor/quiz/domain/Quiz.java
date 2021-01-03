@@ -4,8 +4,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.domain.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
@@ -27,7 +25,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
         indexes = {
                 @Index(name = "quizzes_indx_0", columnList = "course_execution_id")
         })
-public class Quiz implements DomainEntity {
+public class Quiz {
     public enum QuizType {
         EXAM, TEST, GENERATED, PROPOSED, IN_CLASS, TOURNAMENT
     }
@@ -103,11 +101,6 @@ public class Quiz implements DomainEntity {
         setVersion(quizDto.getVersion());
 
 
-    }
-
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitQuiz(this);
     }
 
     public Integer getId() {

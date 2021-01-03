@@ -6,9 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.dto.CourseDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Reply;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.repository.DiscussionRepository;
@@ -23,7 +21,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.repository.Que
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.UserRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService;
 
 import java.io.Serializable;
 
@@ -48,12 +45,6 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
     private QuizRepository quizRepository;
 
     @Autowired
-    private CourseService courseService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
     private QuestionAnswerRepository questionAnswerRepository;
 
     @Autowired
@@ -71,8 +62,6 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
             CourseDto courseDto = (CourseDto) targetDomainObject;
             String permissionValue = (String) permission;
             switch (permissionValue) {
-                case "EXECUTION.CREATE":
-                    return userService.getEnrolledCoursesAcronyms(userId).contains(courseDto.getAcronym() + courseDto.getAcademicTerm());
                 case "DEMO.ACCESS":
                     return courseDto.getName().equals("Demo Course");
                 default:
@@ -84,25 +73,8 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
             int id = (int) targetDomainObject;
             String permissionValue = (String) permission;
             switch (permissionValue) {
-                case "DEMO.ACCESS":
-                    CourseDto courseDto = courseService.getCourseExecutionById(id);
-                    return courseDto.getName().equals("Demo Course");
-                case "COURSE.ACCESS":
-                    return userService.userHasAnExecutionOfCourse(userId, id);
                 case "EXECUTION.ACCESS":
                     return userHasThisExecution(userId, id);
-                case "QUESTION.ACCESS":
-                    Question question = questionRepository.findQuestionWithCourseById(id).orElse(null);
-                    if (question != null) {
-                        return userService.userHasAnExecutionOfCourse(userId, question.getCourse().getId());
-                    }
-                    return false;
-                case "TOPIC.ACCESS":
-                    Topic topic = topicRepository.findTopicWithCourseById(id).orElse(null);
-                    if (topic != null) {
-                        return userService.userHasAnExecutionOfCourse(userId, topic.getCourse().getId());
-                    }
-                    return false;
                 case "ASSESSMENT.ACCESS":
                     Integer courseExecutionId = assessmentRepository.findCourseExecutionIdById(id).orElse(null);
                     if (courseExecutionId != null) {

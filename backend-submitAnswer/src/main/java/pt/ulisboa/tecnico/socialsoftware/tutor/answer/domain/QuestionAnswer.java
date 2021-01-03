@@ -2,8 +2,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDetailsDto;
@@ -19,7 +17,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.IN
                 @Index(name = "question_answers_indx_0", columnList = "quiz_question_id")
         }
 )
-public class QuestionAnswer implements DomainEntity {
+public class QuestionAnswer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -141,11 +139,6 @@ public class QuestionAnswer implements DomainEntity {
         if (discussion != null) {
             discussion.remove();
         }
-    }
-
-    @Override
-    public void accept(Visitor visitor) {
-        visitor.visitQuestionAnswer(this);
     }
 
     public StatementAnswerDetailsDto getStatementAnswerDetailsDto() {
