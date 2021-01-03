@@ -213,24 +213,6 @@ public class QuizService {
         return new QuizQuestionDto(quizQuestion);
     }
 
-
-    @Retryable(
-            value = {SQLException.class},
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void removeQuiz(Integer quizId) {
-        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, quizId));
-
-        quiz.remove();
-
-        Set<QuizQuestion> quizQuestions = new HashSet<>(quiz.getQuizQuestions());
-
-        quizQuestions.forEach(QuizQuestion::remove);
-        quizQuestions.forEach(quizQuestion -> quizQuestionRepository.delete(quizQuestion));
-
-        quizRepository.delete(quiz);
-    }
-
     @Retryable(
             value = {SQLException.class},
             backoff = @Backoff(delay = 5000))

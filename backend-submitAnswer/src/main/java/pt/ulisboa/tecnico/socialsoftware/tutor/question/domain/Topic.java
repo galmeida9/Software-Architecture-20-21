@@ -5,7 +5,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 
 import javax.persistence.*;
 import java.util.*;
@@ -35,9 +34,6 @@ public class Topic implements DomainEntity {
     @ManyToOne(fetch=FetchType.EAGER, optional=false)
     @JoinColumn(name = "course_id")
     private Course course;
-
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "topics")
-    private Set<Tournament> tournaments = new HashSet<>();
 
     public Topic() {
     }
@@ -71,10 +67,6 @@ public class Topic implements DomainEntity {
         return questions;
     }
 
-    public Set<Tournament> getTournaments() {
-        return tournaments;
-    }
-
     public void addQuestion(Question question) {
         this.questions.add(question);
     }
@@ -94,14 +86,6 @@ public class Topic implements DomainEntity {
     public void setCourse(Course course) {
         this.course = course;
         course.addTopic(this);
-    }
-
-    public void addTournament(Tournament tournament) {
-        this.tournaments.add(tournament);
-    }
-
-    public void removeTournament(Tournament tournament) {
-        this.tournaments.remove(tournament);
     }
 
     @Override
@@ -133,8 +117,5 @@ public class Topic implements DomainEntity {
         getQuestions().clear();
 
         this.topicConjunctions.forEach(topicConjunction -> topicConjunction.getTopics().remove(this));
-
-        getTournaments().forEach(tournament -> tournament.getTopics().remove(this));
-        getTournaments().clear();
     }
 }

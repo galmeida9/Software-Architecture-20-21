@@ -21,8 +21,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicReposito
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.domain.QuestionSubmission;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.repository.QuestionSubmissionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
-import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.repository.TournamentRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService;
@@ -54,9 +52,6 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private TournamentRepository tournamentRepository;
 
     @Autowired
     private QuestionAnswerRepository questionAnswerRepository;
@@ -120,20 +115,8 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                         return userHasThisExecution(userId, courseExecutionId);
                     }
                     return false;
-                case "TOURNAMENT.ACCESS":
-                    courseExecutionId = tournamentRepository.findCourseExecutionIdByTournamentId(id).orElse(null);
-                    if (courseExecutionId != null) {
-                        return userHasThisExecution(userId, courseExecutionId);
-                    }
-                    return false;
                 case "TOURNAMENT.PARTICIPANT":
                         return userParticipatesInTournament(userId, id);
-                case "TOURNAMENT.OWNER":
-                    Tournament tournament = tournamentRepository.findById(id).orElse(null);
-                    if (tournament != null) {
-                        return tournament.isCreator(user);
-                    }
-                    return false;
                 case "SUBMISSION.ACCESS":
                     QuestionSubmission questionSubmission = questionSubmissionRepository.findById(id).orElse(null);
                     if (questionSubmission != null) {

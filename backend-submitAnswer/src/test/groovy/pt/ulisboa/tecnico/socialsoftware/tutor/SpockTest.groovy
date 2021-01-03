@@ -38,7 +38,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService
 
 import spock.lang.Shared
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserServiceApplicational
+
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.repository.AuthUserRepository
 import spock.lang.Specification
 

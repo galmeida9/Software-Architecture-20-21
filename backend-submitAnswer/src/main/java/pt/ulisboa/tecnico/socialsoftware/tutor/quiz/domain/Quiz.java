@@ -9,7 +9,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -78,9 +77,6 @@ public class Quiz implements DomainEntity {
     @ManyToOne(fetch=FetchType.EAGER, optional=false)
     @JoinColumn(name = "course_execution_id")
     private CourseExecution courseExecution;
-
-    @OneToOne
-    private Tournament tournament;
 
     public Quiz() {}
 
@@ -270,13 +266,6 @@ public class Quiz implements DomainEntity {
         courseExecution.addQuiz(this);
     }
 
-    public Tournament getTournament() {
-        return tournament;
-    }
-
-    public void setTournament(Tournament tournament) {
-        this.tournament = tournament;
-    }
 
     public void addQuizQuestion(QuizQuestion quizQuestion) {
         this.quizQuestions.add(quizQuestion);
@@ -285,26 +274,6 @@ public class Quiz implements DomainEntity {
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
     }
-
-    // @Override
-    // public String toString() {
-    //     return "Quiz{" +
-    //             "id=" + id +
-    //             ", key=" + key +
-    //             ", creationDate=" + creationDate +
-    //             ", availableDate=" + availableDate +
-    //             ", conclusionDate=" + conclusionDate +
-    //             ", resultsDate=" + resultsDate +
-    //             ", scramble=" + scramble +
-    //             ", qrCodeOnly=" + qrCodeOnly +
-    //             ", oneWay=" + oneWay +
-    //             ", title='" + title + '\'' +
-    //             ", type=" + type +
-    //             ", series=" + series +
-    //             ", version='" + version + '\'' +
-    //             ", quizQuestions=" + quizQuestions +
-    //             '}';
-    // }
 
     private void generateKeys() {
         int max = this.courseExecution.getQuizzes().stream()
@@ -330,18 +299,6 @@ public class Quiz implements DomainEntity {
                 }
             }
         }
-    }
-
-    public void remove() {
-        checkCanChange();
-
-        if (this.tournament != null) {
-            this.tournament.setQuiz(null);
-        }
-        this.tournament = null;
-
-        this.courseExecution.getQuizzes().remove(this);
-        this.courseExecution = null;
     }
 
     public void checkCanChange() {

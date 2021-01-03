@@ -12,7 +12,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
-import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.domain.Review;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.domain.QuestionSubmission;
 
@@ -76,9 +75,6 @@ public class User implements DomainEntity {
 
     @ManyToMany
     private Set<CourseExecution> courseExecutions = new HashSet<>();
-
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "participants")
-    private Set<Tournament> tournaments = new HashSet<>();
 
     public User() {
     }
@@ -205,8 +201,6 @@ public class User implements DomainEntity {
     public Set<CourseExecution> getCourseExecutions() {
         return courseExecutions;
     }
-
-    public Set<Tournament> getTournaments() { return tournaments; }
 
     public void setCourseExecutions(Set<CourseExecution> courseExecutions) {
         this.courseExecutions = courseExecutions;
@@ -449,14 +443,6 @@ public class User implements DomainEntity {
     public void addCourse(CourseExecution course) {
         this.courseExecutions.add(course);
         course.addUser(this);
-    }
-
-    public void addTournament(Tournament tournament) {
-        this.tournaments.add(tournament);
-    }
-
-    public void removeTournament(Tournament tournament) {
-        this.tournaments.remove(tournament);
     }
 
     public void addQuestionSubmission(QuestionSubmission questionSubmission) {

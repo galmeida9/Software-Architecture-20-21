@@ -4,22 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.ImpExpService;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.AssessmentService;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.TopicService;
-import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.QuestionSubmissionService;
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.StatementService;
-import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.TournamentService;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService;
-import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DemoUtils;
 
 @Component
 public class ScheduledTasks {
 	@Autowired
 	private ImpExpService impExpService;
-
-	@Autowired
-	private DemoUtils demoUtils;
 
 	@Autowired
 	private StatementService statementService;
