@@ -1,11 +1,16 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.AnswerDetails;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
@@ -20,7 +25,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExportVis
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.QuizAnswerItemRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuizAnswerItem;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
@@ -28,10 +32,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.UserRepository;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -55,10 +56,10 @@ public class AnswerService {
     private AnswerDetailsRepository answerDetailsRepository;
 
     @Autowired
-    private QuizAnswerItemRepository quizAnswerItemRepository;
+    private AnswersXmlImport xmlImporter;
 
     @Autowired
-    private AnswersXmlImport xmlImporter;
+    private RestTemplate restTemplate;
 
     @Retryable(
             value = {SQLException.class},
@@ -101,18 +102,12 @@ public class AnswerService {
             value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public boolean concludeTimedQuiz(int quizAnswerId) {
-        try {
-            QuizAnswer quizAnswer = checkQuiz(quizAnswerId);
+    public void concludeTimedQuiz(int quizAnswerId) {
+        QuizAnswer quizAnswer = checkQuiz(quizAnswerId);
 
-            if (!quizAnswer.isCompleted()) {
-                quizAnswer.setCompleted(true);
-            }
-        } catch (TutorException e) {
-            return false;
+        if (!quizAnswer.isCompleted()) {
+            quizAnswer.setCompleted(true);
         }
-
-        return true;
     }
 
     public QuizAnswer checkQuiz(int quizAnswerId) {
@@ -138,20 +133,36 @@ public class AnswerService {
         Quiz quiz = quizRepository.findQuizWithAnswersAndQuestionsById(quizId).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, quizId));
         Map<Integer, QuizAnswer> quizAnswersMap = quiz.getQuizAnswers().stream().collect(Collectors.toMap(QuizAnswer::getId, Function.identity()));
 
-        List<QuizAnswerItem> quizAnswerItems = quizAnswerItemRepository.findQuizAnswerItemsByQuizId(quizId);
+        //List<QuizAnswerItem> quizAnswerItems = quizAnswerItemRepository.findQuizAnswerItemsByQuizId(quizId);
 
-        quizAnswerItems.forEach(quizAnswerItem -> {
-            QuizAnswer quizAnswer = quizAnswersMap.get(quizAnswerItem.getQuizAnswerId());
+        ResponseEntity<List<QuizAnswerItem>> response = restTemplate.exchange(
+                "http://localhost:8078/quizzes/" + quizId, HttpMethod.GET, null,
+                new ParameterizedTypeReference<>() {
+                });
 
-            if (quizAnswer.getAnswerDate() == null) {
-                quizAnswer.setAnswerDate(quizAnswerItem.getAnswerDate());
+        List<QuizAnswerItem> quizAnswerItems = response.getBody();
 
-                for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
-                    writeQuestionAnswer(questionAnswer, quizAnswerItem.getAnswersList());
+        if (response.getStatusCode() == HttpStatus.OK && quizAnswerItems != null) {
+            quizAnswerItems.forEach(quizAnswerItem -> {
+                QuizAnswer quizAnswer = quizAnswersMap.get(quizAnswerItem.getQuizAnswerId());
+
+                if (quizAnswer.getAnswerDate() == null) {
+                    quizAnswer.setAnswerDate(quizAnswerItem.getAnswerDate());
+
+                    for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
+                        writeQuestionAnswer(questionAnswer, quizAnswerItem.getAnswersList());
+                    }
                 }
-            }
-            quizAnswerItemRepository.deleteById(quizAnswerItem.getId());
-        });
+                //quizAnswerItemRepository.deleteById(quizAnswerItem.getId());
+                ResponseEntity<String> deleteResponse = restTemplate.exchange(
+                        "http://localhost:8078/quizzes/" + quizAnswerItem.getId() + "/delete", HttpMethod.DELETE, null,
+                        new ParameterizedTypeReference<>() {
+                        });
+                if (deleteResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                    throw new TutorException(CANNOT_DELETE_QUIZ_ANSWER_ITEM);
+                }
+            });
+        }
     }
 
     private void writeQuestionAnswer(QuestionAnswer questionAnswer, List<StatementAnswerDto> statementAnswerDtoList) {

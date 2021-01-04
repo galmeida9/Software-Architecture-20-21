@@ -3,11 +3,15 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.CorrectAnswerDto;
@@ -59,12 +63,6 @@ public class StatementService {
     private QuizAnswerRepository quizAnswerRepository;
 
     @Autowired
-    private QuizAnswerItemRepository quizAnswerItemRepository;
-
-    @Autowired
-    private QuestionAnswerItemRepository questionAnswerItemRepository;
-
-    @Autowired
     private QuestionRepository questionRepository;
 
     @Autowired
@@ -78,6 +76,9 @@ public class StatementService {
 
     @Autowired
     private TopicService topicService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Retryable(
       value = { SQLException.class },
@@ -258,42 +259,37 @@ public class StatementService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 2000))
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public boolean concludeTimedQuiz(int quizAnswerId) {
-        return answerService.concludeTimedQuiz(quizAnswerId);
+    public void concludeTimedQuiz(int quizAnswerId) {
+        answerService.concludeTimedQuiz(quizAnswerId);
     }
 
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 2000))
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public void submitAnswer(String username, int quizId, StatementAnswerDto answer) {
-        if (answer.getTimeToSubmission() == null) {
-            answer.setTimeToSubmission(0);
-        }
-
-        if (answer.emptyAnswer()) {
-            questionAnswerItemRepository.insertQuestionAnswerItemOptionIdNull(username, quizId, answer.getQuizQuestionId(), DateHandler.now(),
-                    answer.getTimeTaken(), answer.getTimeToSubmission());
-        } else {
-            questionAnswerItemRepository.save(answer.getQuestionAnswerItem(username, quizId));
-        }
-    }
 
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 2000))
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void writeQuizAnswersAndCalculateStatistics() {
-        Set<Integer> quizzesToWrite = quizAnswerItemRepository.findQuizzesToWrite();
-        quizzesToWrite.forEach(quizToWrite -> {
-            if (quizRepository.findById(quizToWrite).isPresent()) {
-                answerService.writeQuizAnswers(quizToWrite);
-            }
-        });
+        //Set<Integer> quizzesToWrite = quizAnswerItemRepository.findQuizzesToWrite();
 
-        Set<QuizAnswer> quizAnswersToClose = quizAnswerRepository.findQuizAnswersToCalculateStatistics(DateHandler.now());
+        ResponseEntity<Set<Integer>> response = restTemplate.exchange(
+                "http://localhost:8078/quizzes/write", HttpMethod.GET, null,
+                new ParameterizedTypeReference<>() {
+                });
 
-        quizAnswersToClose.forEach(QuizAnswer::calculateStatistics);
+        if (response.getBody() != null) {
+            Set<Integer> quizzesToWrite = response.getBody();
+
+
+            quizzesToWrite.forEach(quizToWrite -> {
+                if (quizRepository.findById(quizToWrite).isPresent()) {
+                    answerService.writeQuizAnswers(quizToWrite);
+                }
+            });
+
+            Set<QuizAnswer> quizAnswersToClose = quizAnswerRepository.findQuizAnswersToCalculateStatistics(DateHandler.now());
+
+            quizAnswersToClose.forEach(QuizAnswer::calculateStatistics);
+        }
     }
 
     @Retryable(

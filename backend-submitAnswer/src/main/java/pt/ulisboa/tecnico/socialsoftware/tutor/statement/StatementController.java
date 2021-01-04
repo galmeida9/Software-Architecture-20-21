@@ -3,27 +3,18 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.*;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuestionAnswerItem;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class StatementController {
     private static final Logger logger = LoggerFactory.getLogger(StatementController.class);
     @Autowired
     private StatementService statementService;
-
-    @Autowired
-    private RestTemplate restTemplate;
 
     @PostMapping("/quizzes/{quizId}/submit")
     public void submitAnswer(@PathVariable int quizId, @Valid @RequestBody StatementAnswerDto answer) {
@@ -32,19 +23,13 @@ public class StatementController {
         statementService.submitAnswer(username, quizId, answer);
     }
 
-    @PostMapping("/quizzes/{quizId}/conclude")
-    public void concludeQuiz(@PathVariable int quizId, @RequestBody StatementQuizDto statementQuizDto) {
-        ResponseEntity<Boolean> response = restTemplate.exchange(
-                "http://localhost:8080/quizzes/" + statementQuizDto.getQuizAnswerId() + "/concludeTimed", HttpMethod.GET, null,
-                new ParameterizedTypeReference<>() {
-                });
+    @GetMapping("/questionAnswerItem/{id}")
+    public List<QuestionAnswerItem> findQuestionAnswerItemsByQuizId(@PathVariable int id) {
+        return statementService.findQuestionAnswerItemsByQuizId(id);
+    }
 
-        if (response.getBody() != null) {
-            boolean result = response.getBody();
-
-            if (result) {
-                statementService.concludeQuiz(statementQuizDto);
-            }
-        }
+    @PostMapping("/anonymize/{oldUsername}")
+    public void anonymizeUser(@PathVariable String oldUsername, @Valid @RequestBody String newUsername) {
+        statementService.anonymizeUser(oldUsername, newUsername);
     }
 }

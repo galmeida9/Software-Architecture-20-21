@@ -54,11 +54,11 @@ httpClient.interceptors.response.use(
   error => Promise.reject(error)
 );
 
-const httpClient2 = axios.create();
-httpClient2.defaults.timeout = 100000;
-httpClient2.defaults.baseURL = 'http://localhost:8079';
-httpClient2.defaults.headers.post['Content-Type'] = 'application/json';
-httpClient2.interceptors.request.use(
+const httpClientSubAnswer = axios.create();
+httpClientSubAnswer.defaults.timeout = 100000;
+httpClientSubAnswer.defaults.baseURL = 'http://localhost:8079';
+httpClientSubAnswer.defaults.headers.post['Content-Type'] = 'application/json';
+httpClientSubAnswer.interceptors.request.use(
   config => {
     if (!config.headers.Authorization) {
       const token = Store.getters.getToken;
@@ -71,7 +71,39 @@ httpClient2.interceptors.request.use(
   },
   error => Promise.reject(error)
 );
-httpClient2.interceptors.response.use(
+httpClientSubAnswer.interceptors.response.use(
+  response => {
+    if (response.data.notification) {
+      if (response.data.notification.errorMessages.length)
+        Store.dispatch(
+          'notification',
+          response.data.notification.errorMessages
+        );
+      response.data = response.data.response;
+    }
+    return response;
+  },
+  error => Promise.reject(error)
+);
+
+const httpClientConQuiz = axios.create();
+httpClientConQuiz.defaults.timeout = 100000;
+httpClientConQuiz.defaults.baseURL = 'http://localhost:8078';
+httpClientConQuiz.defaults.headers.post['Content-Type'] = 'application/json';
+httpClientConQuiz.interceptors.request.use(
+  config => {
+    if (!config.headers.Authorization) {
+      const token = Store.getters.getToken;
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  error => Promise.reject(error)
+);
+httpClientConQuiz.interceptors.response.use(
   response => {
     if (response.data.notification) {
       if (response.data.notification.errorMessages.length)
@@ -425,9 +457,11 @@ export default class RemoteServices {
   }
 
   static submitAnswer(quizId: number, answer: StatementAnswer) {
-    httpClient2.post(`/quizzes/${quizId}/submit`, answer).catch(error => {
-      console.debug(error);
-    });
+    httpClientSubAnswer
+      .post(`/quizzes/${quizId}/submit`, answer)
+      .catch(error => {
+        console.debug(error);
+      });
   }
 
   static async concludeQuiz(
@@ -448,9 +482,9 @@ export default class RemoteServices {
       });
   }
 
-  static async concludeTimedQuiz(statementQuiz: StatementQuiz){
+  static async concludeTimedQuiz(statementQuiz: StatementQuiz) {
     let sendStatement = { ...statementQuiz, questions: [] };
-    return httpClient2
+    return httpClientConQuiz
       .post(`/quizzes/${statementQuiz.id}/conclude`, sendStatement)
       .catch(async error => {
         throw Error(await this.errorMessage(error));

@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuestionAnswerItem;
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuizAnswerItem;
 
 import java.time.LocalDateTime;
 import java.util.List;

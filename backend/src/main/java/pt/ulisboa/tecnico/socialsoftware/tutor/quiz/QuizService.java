@@ -4,11 +4,16 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuizAnswerDto;
@@ -29,7 +34,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.domain.QuestionSubmission;
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.repository.QuestionSubmissionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
@@ -38,7 +42,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuestionAnswerItem;
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.QuestionAnswerItemRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 import java.io.*;
 import java.io.ByteArrayOutputStream;
@@ -69,9 +72,6 @@ public class QuizService {
     private QuizRepository quizRepository;
 
     @Autowired
-    private QuestionAnswerItemRepository questionAnswerItemRepository;
-
-    @Autowired
     private QuizAnswerRepository quizAnswerRepository;
 
     @Autowired
@@ -92,6 +92,8 @@ public class QuizService {
     @Autowired
     private CourseService courseService;
 
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Retryable(
             value = {SQLException.class},
@@ -286,11 +288,23 @@ public class QuizService {
         return latexExport.export(quiz);
     }
 
+    private List<QuestionAnswerItem> findQuestionAnswerItemsByQuizId(int quizId) {
+        ResponseEntity<List<QuestionAnswerItem>> response = restTemplate.exchange(
+                "http://localhost:8079/questionAnswerItem/" + quizId, HttpMethod.GET, null,
+                new ParameterizedTypeReference<>() {
+                });
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        }
+        return new ArrayList<>();
+    }
+
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public ByteArrayOutputStream exportQuiz(int quizId) {
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, quizId));
 
-        List<QuestionAnswerItem> questionAnswerItems = questionAnswerItemRepository.findQuestionAnswerItemsByQuizId(quizId);
+        List<QuestionAnswerItem> questionAnswerItems = this.findQuestionAnswerItemsByQuizId(quizId);
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              ZipOutputStream zos = new ZipOutputStream(baos)) {
@@ -361,7 +375,7 @@ public class QuizService {
             myWriter.close();
         }
 
-        List<QuestionAnswerItem> questionAnswerItems = questionAnswerItemRepository.findQuestionAnswerItemsByQuizId(quizId);
+        List<QuestionAnswerItem> questionAnswerItems = this.findQuestionAnswerItemsByQuizId(quizId);
         CSVQuizExportVisitor csvExport = new CSVQuizExportVisitor();
         myObj = new File(directoryPath + "/" + quiz.getId() + ".csv");
         if (myObj.createNewFile()) {

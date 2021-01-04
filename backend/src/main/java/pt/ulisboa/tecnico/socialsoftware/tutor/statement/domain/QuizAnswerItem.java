@@ -15,10 +15,10 @@ import java.util.List;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.CANNOT_CONCLUDE_QUIZ;
 
-@Entity
+//@Entity
 public class QuizAnswerItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private Integer quizId;
@@ -27,10 +27,18 @@ public class QuizAnswerItem {
 
     private LocalDateTime answerDate;
 
-    @Lob
+    //@Lob
     private String answers;
 
     public QuizAnswerItem() {
+    }
+
+    public QuizAnswerItem(Integer id, Integer quizId, Integer quizAnswerId, LocalDateTime answerDate, String answers) {
+        this.id = id;
+        this.quizId = quizId;
+        this.quizAnswerId = quizAnswerId;
+        this.answerDate = answerDate;
+        this.answers = answers;
     }
 
     public QuizAnswerItem(StatementQuizDto statementQuizDto) {

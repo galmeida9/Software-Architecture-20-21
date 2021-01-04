@@ -30,7 +30,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.repository.Que
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.QuestionAnswerItemRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.QuizAnswerItemRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.StatementService
 import pt.ulisboa.tecnico.socialsoftware.tutor.questionsubmission.QuestionSubmissionService
@@ -170,9 +169,6 @@ class SpockTest extends Specification {
 
     @Autowired
     QuestionAnswerRepository questionAnswerRepository
-
-    @Autowired
-    QuestionAnswerItemRepository questionAnswerItemRepository
 
     @Autowired
     QuestionRepository questionRepository

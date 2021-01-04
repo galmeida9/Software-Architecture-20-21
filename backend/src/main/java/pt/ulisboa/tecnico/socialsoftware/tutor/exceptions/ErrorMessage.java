@@ -125,6 +125,7 @@ public enum ErrorMessage {
     CANNOT_REVIEW_QUESTION_SUBMISSION("Question submission already reviewed by teacher cannot be reviewed again"),
 
     CANNOT_CONCLUDE_QUIZ("Cannot conclude quiz."),
+    CANNOT_DELETE_QUIZ_ANSWER_ITEM("QuizAnswerItem cannot be deleted"),
 
     ACCESS_DENIED("You do not have permission to view this resource"),
     CANNOT_OPEN_FILE("Cannot open file"),

@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 
@@ -8,20 +10,20 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@Entity
-@Table(name = "question_answer_items",
-        indexes = {
-                @Index(name = "question_answer_items_indx_0", columnList = "quiz_id"),
-        })
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "question_answer_type",
-        columnDefinition = "varchar(32) not null default 'multiple_choice'",
-        discriminatorType = DiscriminatorType.STRING)
+//@Entity
+//@Table(name = "question_answer_items",
+//        indexes = {
+//                @Index(name = "question_answer_items_indx_0", columnList = "quiz_id"),
+//        })
+//@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+//@DiscriminatorColumn(name = "question_answer_type",
+//        columnDefinition = "varchar(32) not null default 'multiple_choice'",
+//        discriminatorType = DiscriminatorType.STRING)
 public abstract class QuestionAnswerItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "quiz_id")
+    //@Column(name = "quiz_id")
     private Integer quizId;
     private String username;
     private Integer quizQuestionId;
@@ -30,6 +32,16 @@ public abstract class QuestionAnswerItem {
     private Integer timeToSubmission;
 
     public QuestionAnswerItem() {
+    }
+
+    public QuestionAnswerItem(Integer id, Integer quizId, String username, Integer quizQuestionId, LocalDateTime answerDate, Integer timeTaken, Integer timeToSubmission) {
+        this.id = id;
+        this.quizId = quizId;
+        this.username = username;
+        this.quizQuestionId = quizQuestionId;
+        this.answerDate = answerDate;
+        this.timeTaken = timeTaken;
+        this.timeToSubmission = timeToSubmission;
     }
 
     public QuestionAnswerItem(String username, int quizId, StatementAnswerDto answer) {
