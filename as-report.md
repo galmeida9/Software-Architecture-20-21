@@ -92,9 +92,11 @@ In the chart above we can observe that the performance almost follows a linear d
 
 ## Scalability
 
-Analyzing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Therefore, we made the following changes:
-* Turned the QuizAnswerItem Repository into a Queue, where the submitQuiz threads produce QuizAnswerItem and the getAnswers thread consumes;
-* Instead of having one QuestionAnswerItem Repository we have an individual repository for each instance of submitAnswer.
+Analysing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Initially we tried a monolithic approach, where each thread had a table to store the answers, but this approach only scaled vertically, and if it were horizontally scaled would make increasing the performance easier, the solution was microservices, since we only needed to boot more instances of a microservice and add more hardware to easily increase performance without much effort. Therefore, we made the following changes:
+* Created a microservice to handle the submission of answers, with its own database to store the submissions.
+* Created a microservice to handle the submission of final quizzes' answers, with its own database to store the answers.
+
+The backend now in order to get information about the answers has to communicate with the microservice that has that information to get it, has we can see in the architecture developed below.
 
 ### Architecture
 
