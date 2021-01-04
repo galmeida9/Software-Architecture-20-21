@@ -2,8 +2,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.discussion.dto;
 
 import java.io.Serializable;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
-import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Reply;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.REPLY_MISSING_DATA;
@@ -18,17 +16,6 @@ public class ReplyDto implements Serializable {
     private boolean isPublic;
 
     public ReplyDto() {
-    }
-
-    public ReplyDto(Reply reply) {
-        this.name = reply.getUser().getName();
-        this.username = reply.getUser().getUsername();
-        this.id = reply.getId();
-        this.userId = reply.getUser().getId();
-        checkEmptyMessage(reply.getMessage());
-        this.message = reply.getMessage();
-        this.date = DateHandler.toISOString(reply.getDate());
-        this.isPublic = reply.isPublic();
     }
 
     public String getName() {

@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ImageDto;
 
 import java.io.Serializable;
@@ -16,19 +14,6 @@ public class StatementQuestionDto implements Serializable {
     private StatementQuestionDetailsDto questionDetails;
 
     public StatementQuestionDto() {
-    }
-
-    public StatementQuestionDto(QuestionAnswer questionAnswer) {
-        Question question = questionAnswer.getQuizQuestion().getQuestion();
-        this.content = question.getContent();
-        if (question.getImage() != null) {
-            this.image = new ImageDto(question.getImage());
-        }
-
-        this.questionId = questionAnswer.getQuizQuestion().getQuestion().getId();
-
-        this.sequence = questionAnswer.getSequence();
-        this.questionDetails = question.getStatementQuestionDetailsDto();
     }
 
     public String getContent() {

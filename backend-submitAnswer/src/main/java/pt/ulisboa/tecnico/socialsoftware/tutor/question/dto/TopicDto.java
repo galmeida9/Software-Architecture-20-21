@@ -1,8 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
-
 import java.io.Serializable;
 
 public class TopicDto implements Serializable {
@@ -11,12 +9,6 @@ public class TopicDto implements Serializable {
     private Integer numberOfQuestions;
 
     public TopicDto() {
-    }
-
-    public TopicDto(Topic topic) {
-        this.id = topic.getId();
-        this.name = topic.getName();
-        this.numberOfQuestions = topic.getQuestions().size();
     }
 
     public TopicDto(TopicDto topicDto) {

@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.AnswerDetails;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuestionAnswerItem;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.dto.DiscussionDto;
 
@@ -19,19 +17,6 @@ public class StatementAnswerDto implements Serializable {
     private StatementAnswerDetailsDto answerDetails;
 
     public StatementAnswerDto() {
-    }
-
-    public StatementAnswerDto(QuestionAnswer questionAnswer) {
-        this.timeTaken = questionAnswer.getTimeTaken();
-        this.sequence = questionAnswer.getSequence();
-        this.questionAnswerId = questionAnswer.getId();
-        this.quizQuestionId = questionAnswer.getQuizQuestion().getId();
-
-        this.answerDetails = questionAnswer.getStatementAnswerDetailsDto();
-
-        if (questionAnswer.getDiscussion() != null){
-            this.userDiscussion = new DiscussionDto(questionAnswer.getDiscussion(),false);
-        }
     }
 
     public Integer getTimeTaken() {
@@ -74,9 +59,9 @@ public class StatementAnswerDto implements Serializable {
         this.timeToSubmission = timeToSubmission;
     }
 
-    public AnswerDetails getAnswerDetails(QuestionAnswer questionAnswer){
-        return this.getAnswerDetails() != null ? this.answerDetails.getAnswerDetails(questionAnswer) : null;
-    }
+//    public AnswerDetails getAnswerDetails(QuestionAnswer questionAnswer){
+//        return this.getAnswerDetails() != null ? this.answerDetails.getAnswerDetails(questionAnswer) : null;
+//    }
 
     public StatementAnswerDetailsDto getAnswerDetails() {
         return answerDetails;

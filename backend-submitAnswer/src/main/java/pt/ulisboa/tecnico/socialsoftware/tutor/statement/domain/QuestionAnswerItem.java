@@ -1,12 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Entity
 @Table(name = "question_answer_items",
@@ -97,5 +95,5 @@ public abstract class QuestionAnswerItem {
         this.timeToSubmission = timeToSubmission;
     }
 
-    public abstract String getAnswerRepresentation(Map<Integer, Option> options);
+//    public abstract String getAnswerRepresentation(Map<Integer, Option> options);
 }

@@ -28,6 +28,7 @@ public class TutorApplication extends SpringBootServletInitializer implements In
     @Override
     public void afterPropertiesSet() {
         // Run on startup
+
         JwtTokenProvider.generateKeys();
     }
 

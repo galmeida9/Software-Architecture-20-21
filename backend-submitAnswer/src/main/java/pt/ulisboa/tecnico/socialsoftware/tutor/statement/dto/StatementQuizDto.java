@@ -1,17 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
-
-import javax.persistence.Embeddable;
 import java.io.Serializable;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class StatementQuizDto implements Serializable {
     private Integer id;
@@ -27,30 +18,6 @@ public class StatementQuizDto implements Serializable {
     private List<StatementAnswerDto> answers = new ArrayList<>();
 
     public StatementQuizDto() {}
-
-    public StatementQuizDto(QuizAnswer quizAnswer) {
-        this.id = quizAnswer.getQuiz().getId();
-        this.quizAnswerId = quizAnswer.getId();
-        this.title = quizAnswer.getQuiz().getTitle();
-        this.oneWay = quizAnswer.getQuiz().isOneWay();
-        this.timed = quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS);
-        this.availableDate = DateHandler.toISOString(quizAnswer.getQuiz().getAvailableDate());
-        this.conclusionDate = DateHandler.toISOString(quizAnswer.getQuiz().getConclusionDate());
-
-        if (quizAnswer.getQuiz().getConclusionDate() != null && (quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS) || quizAnswer.getQuiz().getType().equals(Quiz.QuizType.TOURNAMENT))) {
-            this.timeToSubmission = ChronoUnit.MILLIS.between(DateHandler.now(), quizAnswer.getQuiz().getConclusionDate());
-        }
-
-        this.questions = quizAnswer.getQuestionAnswers().stream()
-                .map(StatementQuestionDto::new)
-                .sorted(Comparator.comparing(StatementQuestionDto::getSequence))
-                .collect(Collectors.toList());
-
-        this.answers = quizAnswer.getQuestionAnswers().stream()
-                .map(StatementAnswerDto::new)
-                .sorted(Comparator.comparing(StatementAnswerDto::getSequence))
-                .collect(Collectors.toList());
-    }
 
     public Integer getId() {
         return id;

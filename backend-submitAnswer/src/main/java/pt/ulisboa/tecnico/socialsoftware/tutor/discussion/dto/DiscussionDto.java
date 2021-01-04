@@ -1,17 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.discussion.dto;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
-import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Discussion;
-import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Reply;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
-
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.DISCUSSION_MISSING_QUESTION;
 
 public class DiscussionDto implements Serializable {
     private Integer id;
@@ -26,30 +19,6 @@ public class DiscussionDto implements Serializable {
 
 
     public DiscussionDto() {
-    }
-
-    public DiscussionDto(Discussion discussion, boolean deep) {
-        this.id = discussion.getId();
-
-        if (discussion.getQuestion() == null) {
-            throw new TutorException(DISCUSSION_MISSING_QUESTION);
-        }
-
-        if (deep) {
-            this.question = new QuestionDto(discussion.getQuestion());
-        }
-
-
-        this.name = discussion.getUser().getName();
-        this.username = discussion.getUser().getUsername();
-        this.message = discussion.getMessage();
-        this.date = DateHandler.toISOString(discussion.getDate());
-        this.courseExecutionId = discussion.getCourseExecution().getId();
-        this.closed = discussion.isClosed();
-
-        if (discussion.getReplies() != null) {
-            this.replies = discussion.getReplies().stream().map(ReplyDto::new).collect(Collectors.toList());
-        }
     }
 
     public String getMessage() {

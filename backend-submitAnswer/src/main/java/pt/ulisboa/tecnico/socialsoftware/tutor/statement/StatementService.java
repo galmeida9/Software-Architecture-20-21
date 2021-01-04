@@ -6,30 +6,30 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.CorrectAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuizAnswerItem;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
 
 import java.sql.SQLException;
-import java.util.List;
 
 @Service
 public class StatementService {
 
     @Autowired
-    private QuestionAnswerItemRepository questionAnswerItemRepository;
+    private QuizAnswerItemRepository quizAnswerItemRepository;
 
     @Autowired
-    private AnswerService answerService;
+    private QuestionAnswerItemRepository questionAnswerItemRepository;
 
     @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 2000))
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void concludeQuiz(StatementQuizDto statementQuizDto) {
-        answerService.concludeQuiz(statementQuizDto);
+
+        QuizAnswerItem quizAnswerItem = new QuizAnswerItem(statementQuizDto);
+        quizAnswerItemRepository.save(quizAnswerItem);
     }
 
     @Retryable(

@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Image;
-
 import java.io.Serializable;
 
 public class ImageDto implements Serializable {
@@ -10,12 +8,6 @@ public class ImageDto implements Serializable {
     private Integer width;
 
     public ImageDto() {
-    }
-
-    public ImageDto(Image image) {
-        this.id = image.getId();
-        this.width = image.getWidth();
-        this.url = image.getUrl();
     }
 
     public Integer getId() {

@@ -1,16 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class QuestionDto implements Serializable {
     private Integer id;
@@ -30,31 +22,6 @@ public class QuestionDto implements Serializable {
     private QuestionDetailsDto questionDetailsDto;
 
     public QuestionDto() {
-    }
-
-    public QuestionDto(Question question) {
-        this.id = question.getId();
-        this.title = question.getTitle();
-        this.content = question.getContent();
-        this.difficulty = question.getDifficulty();
-        this.numberOfAnswers = question.getNumberOfAnswers();
-        this.numberOfNonGeneratedQuizzes = question.getQuizQuestions().size() - this.numberOfGeneratedQuizzes;
-        this.numberOfCorrect = question.getNumberOfCorrect();
-        this.status = question.getStatus().name();
-        this.topics = question.getTopics().stream().sorted(Comparator.comparing(Topic::getName)).map(TopicDto::new).collect(Collectors.toList());
-        this.creationDate = DateHandler.toISOString(question.getCreationDate());
-
-        if (!question.getQuizQuestions().isEmpty()) {
-            this.numberOfGeneratedQuizzes = (int) question.getQuizQuestions().stream()
-                    .map(QuizQuestion::getQuiz)
-                    .filter(quiz -> quiz.getType().equals(Quiz.QuizType.GENERATED))
-                    .count();
-        }
-
-        if (question.getImage() != null)
-            this.image = new ImageDto(question.getImage());
-
-        this.questionDetailsDto = question.getQuestionDetailsDto();
     }
 
     public Integer getId() {
