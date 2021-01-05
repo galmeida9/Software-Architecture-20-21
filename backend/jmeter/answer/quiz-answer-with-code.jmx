@@ -322,9 +322,12 @@ ZonedDateTime startDate = ZonedDateTime.now();
 ZonedDateTime finishDate = startDate.plusMinutes(7);
 String start = startDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 String end = finishDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+String start2 = startDate.format(&quot;yyyy-MM-dd H:m&quot;);
+String end2 = finishDate.format(&quot;yyyy-MM-dd H:m&quot;);
 vars.put(&quot;startTime&quot;, start);
-props.put(&quot;startTime&quot;, start);
-vars.put(&quot;endTime&quot;, end);</stringProp>
+props.put(&quot;startTime&quot;, start2);
+vars.put(&quot;endTime&quot;, end);
+props.put(&quot;endTime&quot;, end2);</stringProp>
             </JSR223PreProcessor>
             <hashTree/>
             <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Get quiz id" enabled="true">
@@ -740,12 +743,12 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Synchronizing Timer" enabled="true">
+          <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Synchronizing Timer" enabled="false">
             <intProp name="groupSize">0</intProp>
             <longProp name="timeoutInMs">0</longProp>
           </SyncTimer>
           <hashTree/>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Random Timer" enabled="false">
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Random Timer" enabled="true">
             <stringProp name="ConstantTimer.delay">${__Random(1000, 10000)}</stringProp>
           </ConstantTimer>
           <hashTree/>
@@ -803,8 +806,8 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
               <stringProp name="ConstantTimer.delay">${__Random(1, 1000)}</stringProp>
             </ConstantTimer>
             <hashTree/>
-            <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="false">
-              <stringProp name="ConstantTimer.delay">35000</stringProp>
+            <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
+              <stringProp name="ConstantTimer.delay">10000</stringProp>
               <stringProp name="RandomTimer.range">5000</stringProp>
             </GaussianRandomTimer>
             <hashTree/>
@@ -861,8 +864,8 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
 &quot;quizAnswerId&quot;:${quiz_answer_id},&#xd;
 &quot;title&quot;:&quot;XXXX&quot;,&#xd;
 &quot;oneWay&quot;:false,&#xd;
-&quot;availableDate&quot;:&quot;${startTime}&quot;,&#xd;
-&quot;conclusionDate&quot;:&quot;-&quot;,&#xd;
+&quot;availableDate&quot;:&quot;${__property(startTime)}&quot;,&#xd;
+&quot;conclusionDate&quot;:&quot;${__property(endTime)}&quot;,&#xd;
 &quot;timeToAvailability&quot;:null,&#xd;
 &quot;timeToSubmission&quot;:null,&#xd;
 &quot;timeToResults&quot;:null&#xd;

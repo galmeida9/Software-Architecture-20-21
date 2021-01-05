@@ -103,3 +103,15 @@ Analyzing the test for performance, we detected a bottleneck in the access to th
 ### Scenarios
 
 ### Tests
+
+Same as first performance test for 1000 students with thinking time
+![1000 Students at the same time](report-resources/scalability-2-microservices-1000-rt.png)
+
+
+Same as second performance test with every student answering at the same time
+* 300 students
+![300 Students at the same time](report-resources/scalability-2-microservices-300-st.png)
+* 600 students
+![600 Students at the same time](report-resources/scalability-2-microservices-600-st.png)
+* 1000 students
+![1000 Students at the same time](report-resources/scalability-2-microservices-1000-st.png)

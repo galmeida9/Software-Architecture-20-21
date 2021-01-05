@@ -103,7 +103,9 @@ public class AnswerService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void concludeTimedQuiz(int quizAnswerId) {
-        QuizAnswer quizAnswer = checkQuiz(quizAnswerId);
+        QuizAnswer quizAnswer = quizAnswerRepository.findById(quizAnswerId)
+                .orElseThrow(() -> new TutorException(QUIZ_ANSWER_NOT_FOUND, quizAnswerId));
+        //QuizAnswer quizAnswer = checkQuiz(quizAnswerId);
 
         if (!quizAnswer.isCompleted()) {
             quizAnswer.setCompleted(true);
