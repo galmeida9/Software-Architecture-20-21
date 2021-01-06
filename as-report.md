@@ -103,6 +103,7 @@ The backend now in order to get information about the answers has to communicate
 ![Scalability Architecture](report-resources/scalability-architecture.png)
 
 ### Scenarios
+With an increment of <x> students answering a quiz, the Quizzes tutor preserves the almost the same performance with a latency of <y> with the cost of using more servers.
 
 ### Tests
 
@@ -115,7 +116,8 @@ The major issue found was if someone exited the quiz, for example if the browser
 ![Availability Architecture](report-resources/)
 
 ### Scenarios
-
+A student initiates a quiz and answers to <x> questions and closes the browser.  The Quizzes tutor preserves the answers and the student can still answer the rest of the quiz if it is on its time. When the student returns to the quiz, the quizzes tutor gets the quiz with the answers already done with <x> milliseconds.
+  
 ### Tests
 In these tests, 10% of the students exit the quiz, and return to it.
 
