@@ -41,6 +41,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.MultipleChoiceAnswerItem;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuestionAnswerItem;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 import java.io.*;
@@ -289,13 +290,13 @@ public class QuizService {
     }
 
     private List<QuestionAnswerItem> findQuestionAnswerItemsByQuizId(int quizId) {
-        ResponseEntity<List<QuestionAnswerItem>> response = restTemplate.exchange(
+        ResponseEntity<List<MultipleChoiceAnswerItem>> response = restTemplate.exchange(
                 "http://localhost:8079/questionAnswerItem/" + quizId, HttpMethod.GET, null,
                 new ParameterizedTypeReference<>() {
                 });
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody();
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            return response.getBody().stream().map(answer -> (QuestionAnswerItem) answer).collect(Collectors.toList());
         }
         return new ArrayList<>();
     }

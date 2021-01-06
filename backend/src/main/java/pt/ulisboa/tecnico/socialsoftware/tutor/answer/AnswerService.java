@@ -158,8 +158,7 @@ public class AnswerService {
                 //quizAnswerItemRepository.deleteById(quizAnswerItem.getId());
                 ResponseEntity<String> deleteResponse = restTemplate.exchange(
                         "http://localhost:8078/quizzes/" + quizAnswerItem.getId() + "/delete", HttpMethod.DELETE, null,
-                        new ParameterizedTypeReference<>() {
-                        });
+                        String.class);
                 if (deleteResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
                     throw new TutorException(CANNOT_DELETE_QUIZ_ANSWER_ITEM);
                 }
