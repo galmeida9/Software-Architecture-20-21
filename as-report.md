@@ -47,7 +47,7 @@ This second test tried to simulate a limit scenario where all the students inser
 ![1000 Students at the same time](report-resources/performance-getquiz-1000_st.png)
 
 
-**Conclusions:** This time we can see that the average time it takes to get a quiz is proportional to the number of students. 
+**Conclusions:** This time we can see that the average time it takes to get a quiz is proportional to the number of students. We did not address this slight performance issue, since in a real scenario the students enter the quiz code with a couple of minutes in advance, if it were any faster than it is now, it would not make any difference because they would not notice that. As we can see above, even if all the students enter at the same time, for 1000 it would take in average 2.4s to get a quiz, but since they enter at least one minute or more before the start of the quiz, it is not an issue. 
 
 
 #### [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx)
@@ -92,18 +92,20 @@ In the chart above we can observe that the performance almost follows a linear d
 
 ## Scalability
 
-Analyzing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Therefore, we made the following changes:
-* Turned the QuizAnswerItem Repository into a Queue, where the submitQuiz threads produce QuizAnswerItem and the getAnswers thread consumes;
-* Instead of having one QuestionAnswerItem Repository we have an individual repository for each instance of submitAnswer.
+Analysing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Initially we tried a monolithic approach, where each thread had a table to store the answers, but this approach only scaled vertically, and if it were horizontally scaled would make increasing the performance easier, the solution was microservices, since we only needed to boot more instances of a microservice and add more hardware to easily increase performance without much effort. Therefore, we made the following changes:
+* Created a microservice to handle the submission of answers, with its own database to store the submissions.
+* Created a microservice to handle the submission of final quizzes' answers, with its own database to store the answers.
+
+The backend now in order to get information about the answers has to communicate with the microservice that has that information to get it, has we can see in the architecture developed below.
 
 ### Architecture
 
 ![Scalability Architecture](report-resources/scalability-architecture.png)
 
 ### Scenarios
+With an increment of <x> students answering a quiz, the Quizzes tutor preserves the almost the same performance with a latency of <y> with the cost of using more servers.
 
 ### Tests
-
 Same as first performance test for 1000 students with thinking time
 ![1000 Students at the same time](report-resources/scalability-2-microservices-1000-rt.png)
 
@@ -115,3 +117,29 @@ Same as second performance test with every student answering at the same time
 ![600 Students at the same time](report-resources/scalability-2-microservices-600-st.png)
 * 1000 students
 ![1000 Students at the same time](report-resources/scalability-2-microservices-1000-st.png)
+
+## Availability
+
+The major issue found was if someone exited the quiz, for example if the browser crashed, there was no way to reenter it.
+
+### Architecture
+
+![Availability Architecture](report-resources/)
+
+### Scenarios
+A student initiates a quiz and answers to <x> questions and closes the browser.  The Quizzes tutor preserves the answers and the student can still answer the rest of the quiz if it is on its time. When the student returns to the quiz, the quizzes tutor gets the quiz with the answers already done with <x> milliseconds.
+  
+### Tests
+In these tests, 10% of the students exit the quiz, and return to it.
+
+Same as first performance test for 1000 students with thinking time
+![1000 Students at the same time](report-resources/)
+
+
+Same as second performance test with every student answering at the same time
+* 300 students
+![300 Students at the same time](report-resources/)
+* 600 students
+![600 Students at the same time](report-resources/)
+* 1000 students
+![1000 Students at the same time](report-resources/)
