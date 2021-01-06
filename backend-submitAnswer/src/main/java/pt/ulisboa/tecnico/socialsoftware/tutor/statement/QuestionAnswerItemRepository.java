@@ -14,8 +14,8 @@ public interface QuestionAnswerItemRepository extends JpaRepository<QuestionAnsw
     @Query(value = "SELECT qai FROM QuestionAnswerItem qai WHERE qai.quizId = :quizId")
     List<QuestionAnswerItem> findQuestionAnswerItemsByQuizId(Integer quizId);
 
-    @Query(value = "SELECT qai FROM QuestionAnswerItem qai WHERE qai.username = :username")
-    List<QuestionAnswerItem> findQuestionAnswerItemsByUsername(String username);
+    @Query(value = "SELECT qai FROM QuestionAnswerItem qai WHERE qai.quizId = :quizId AND qai.username = :username AND qai.isFinal = true ")
+    List<QuestionAnswerItem> findQuestionAnswerItemsByQuizAndUser(int quizId, String username);
 
     @Modifying
     @Query(value = "INSERT INTO question_answer_items (username, quiz_id, quiz_question_id, answer_date, time_taken, time_to_submission, option_id) values (:username, :quizId, :quizQuestionId, :answerDate, :timeTaken, :timeToSubmission, :optionId)",

@@ -6,9 +6,9 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuestionAnswerItem;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.QuestionAnswerItemList;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 
 import java.sql.SQLException;
@@ -51,5 +51,13 @@ public class StatementService {
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void anonymizeUser(String oldUsername, String newUsername) {
         questionAnswerItemRepository.updateQuestionAnswerItemUsername(oldUsername, newUsername);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 2000))
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    public QuestionAnswerItemList getFinalAnswers(int quizId, String user) {
+        return new QuestionAnswerItemList(questionAnswerItemRepository.findQuestionAnswerItemsByQuizAndUser(quizId, user));
     }
 }

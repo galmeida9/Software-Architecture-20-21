@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuestionAnswerItem;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.QuestionAnswerItemList;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 
 import javax.validation.Valid;
@@ -31,5 +32,10 @@ public class StatementController {
     @PostMapping("/anonymize/{oldUsername}")
     public void anonymizeUser(@PathVariable String oldUsername, @Valid @RequestBody String newUsername) {
         statementService.anonymizeUser(oldUsername, newUsername);
+    }
+
+    @PostMapping("/quizzes/{quizId}/getFinal")
+    public QuestionAnswerItemList getFinalAnswers(@PathVariable int quizId, @Valid @RequestBody String user) {
+        return statementService.getFinalAnswers(quizId, user);
     }
 }

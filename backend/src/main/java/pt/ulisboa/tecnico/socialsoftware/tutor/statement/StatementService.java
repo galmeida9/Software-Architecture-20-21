@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.MultipleChoiceAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.CorrectAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
@@ -30,14 +33,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.MultipleChoiceAnswerItem;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuestionAnswerItem;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.UserRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.SolvedQuizDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementCreationDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementTournamentCreationDto;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -202,7 +203,11 @@ public class StatementService {
             if (quizAnswer.getCreationDate() == null) {
                 quizAnswer.setCreationDate(DateHandler.now());
             }
-            return new StatementQuizDto(quizAnswer);
+            else {
+                return getFinalAnswers(new StatementQuizDto(quizAnswer), quizId, user.getUsername());
+            }
+            StatementQuizDto dto = new StatementQuizDto(quizAnswer);
+            return dto;
 
             // Send timer
         } else {
@@ -210,6 +215,35 @@ public class StatementService {
             quizDto.setTimeToAvailability(ChronoUnit.MILLIS.between(DateHandler.now(), quiz.getAvailableDate()));
             return quizDto;
         }
+    }
+
+    private static class QuestionAnswerItemList {
+        private List<MultipleChoiceAnswerItem> answers;
+
+        public List<MultipleChoiceAnswerItem> getAnswers() { return answers; }
+    }
+
+    private StatementQuizDto getFinalAnswers(StatementQuizDto dto, int quizId, String username) {
+        HttpEntity<String> request = new HttpEntity<>(username);
+        ResponseEntity<QuestionAnswerItemList> response = restTemplate.postForEntity(
+                "http://localhost:8079/quizzes/" + quizId + "/getFinal", request, QuestionAnswerItemList.class);
+
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            List<MultipleChoiceAnswerItem> answers = response.getBody().getAnswers();
+
+            dto.setAnswers(dto.getAnswers().stream().map(answer -> {
+                for (MultipleChoiceAnswerItem item: answers) {
+                    if (answer.getQuizQuestionId().equals(item.getQuizQuestionId())) {
+                        ((MultipleChoiceStatementAnswerDetailsDto) answer.getAnswerDetails()).setOptionId(item.getOptionId());
+                        break;
+                    }
+                }
+
+                return answer;
+            }).collect(Collectors.toList()));
+        }
+
+        return dto;
     }
 
     @Retryable(

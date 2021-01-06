@@ -26,6 +26,7 @@ public abstract class QuestionAnswerItem {
     private LocalDateTime answerDate;
     private Integer timeTaken;
     private Integer timeToSubmission;
+    private Boolean isFinal;
 
     public QuestionAnswerItem() {
     }
@@ -37,6 +38,7 @@ public abstract class QuestionAnswerItem {
         this.answerDate = DateHandler.now();
         this.timeTaken = answer.getTimeTaken();
         this.timeToSubmission = answer.getTimeToSubmission();
+        this.isFinal = answer.getIsFinal();
     }
 
     public Integer getId() {
@@ -95,5 +97,8 @@ public abstract class QuestionAnswerItem {
         this.timeToSubmission = timeToSubmission;
     }
 
+    public Boolean getFinal() { return isFinal; }
+
+    public void setFinal(Boolean aFinal) { isFinal = aFinal; }
 //    public abstract String getAnswerRepresentation(Map<Integer, Option> options);
 }
