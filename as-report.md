@@ -47,7 +47,7 @@ This second test tried to simulate a limit scenario where all the students inser
 ![1000 Students at the same time](report-resources/performance-getquiz-1000_st.png)
 
 
-**Conclusions:** This time we can see that the average time it takes to get a quiz is proportional to the number of students. 
+**Conclusions:** This time we can see that the average time it takes to get a quiz is proportional to the number of students. We did not address this slight performance issue, since in a real scenario the students enter the quiz code with a couple of minutes in advance, if it were any faster than it is now, it would not make any difference because they would not notice that. As we can see above, even if all the students enter at the same time, for 1000 it would take in average 2.4s to get a quiz, but since they enter at least one minute or more before the start of the quiz, it is not an issue. 
 
 
 #### [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx)
@@ -105,3 +105,28 @@ The backend now in order to get information about the answers has to communicate
 ### Scenarios
 
 ### Tests
+
+## Availability
+
+The major issue found was if someone exited the quiz, for example if the browser crashed, there was no way to reenter it.
+
+### Architecture
+
+![Availability Architecture](report-resources/)
+
+### Scenarios
+
+### Tests
+In these tests, 10% of the students exit the quiz, and return to it.
+
+Same as first performance test for 1000 students with thinking time
+![1000 Students at the same time](report-resources/)
+
+
+Same as second performance test with every student answering at the same time
+* 300 students
+![300 Students at the same time](report-resources/)
+* 600 students
+![600 Students at the same time](report-resources/)
+* 1000 students
+![1000 Students at the same time](report-resources/)
