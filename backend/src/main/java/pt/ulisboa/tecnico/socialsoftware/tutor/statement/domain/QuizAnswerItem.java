@@ -27,6 +27,8 @@ public class QuizAnswerItem {
 
     private LocalDateTime answerDate;
 
+    private String username;
+
     //@Lob
     private String answers;
 
@@ -51,6 +53,7 @@ public class QuizAnswerItem {
             throw new TutorException(CANNOT_CONCLUDE_QUIZ);
         }
         this.answerDate = DateHandler.now();
+        this.username = statementQuizDto.getUsername();
     }
 
     public Integer getId() {
@@ -91,6 +94,14 @@ public class QuizAnswerItem {
 
     public void setAnswerDate(LocalDateTime answerDate) {
         this.answerDate = answerDate;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public List<StatementAnswerDto> getAnswersList() {

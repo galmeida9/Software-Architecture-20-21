@@ -53,6 +53,10 @@ public class StatementService {
             throw new TutorException(QUIZ_NO_LONGER_AVAILABLE);
         }
 
+        if (quizAnswerItemRepository.findAnswersByQuizIdAndUser(statementQuizDto.getId(), statementQuizDto.getUsername()).size() > 0) {
+            throw new TutorException(QUIZ_ALREADY_COMPLETED);
+        }
+
         QuizAnswerItem quizAnswerItem = new QuizAnswerItem(statementQuizDto);
         quizAnswerItemRepository.save(quizAnswerItem);
     }

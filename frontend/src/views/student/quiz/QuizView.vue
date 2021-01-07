@@ -166,7 +166,6 @@ export default class QuizView extends Vue {
   resumeQuiz: boolean = false;
 
   async created() {
-    console.log(this.statementQuiz);
     if (!this.statementQuiz?.id) {
       await this.$router.push({ name: 'create-quiz' });
     } else {
@@ -255,6 +254,15 @@ export default class QuizView extends Vue {
     await this.$store.dispatch('loading');
     try {
       this.calculateTime();
+
+      if (this.statementQuiz?.oneWay) {
+        let newAnswer = this.statementQuiz.answers[this.questionOrder];
+        newAnswer.timeToSubmission = this.statementQuiz.timeToSubmission;
+        newAnswer.username = this.$store.getters.getUser.username;
+        newAnswer.isFinal = true;
+        RemoteServices.submitAnswer(this.statementQuiz.id, newAnswer);
+      }
+
       this.confirmed = true;
       await this.statementManager.concludeQuiz();
 

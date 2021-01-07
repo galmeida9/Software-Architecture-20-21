@@ -16,6 +16,7 @@ export default class StatementQuiz {
   timeToSubmission!: number | null;
   questions: StatementQuestion[] = [];
   answers: StatementAnswer[] = [];
+  username: String = '';
   private lastTimeCalled: number = Date.now();
   private timerId!: number;
 
@@ -30,6 +31,7 @@ export default class StatementQuiz {
       this.timed = jsonObj.timed;
       this.availableDate = ISOtoString(jsonObj.availableDate);
       this.conclusionDate = ISOtoString(jsonObj.conclusionDate);
+      this.username = jsonObj.username;
 
       this.timeToAvailability = jsonObj.timeToAvailability;
       this.timeToSubmission = jsonObj.timeToSubmission;

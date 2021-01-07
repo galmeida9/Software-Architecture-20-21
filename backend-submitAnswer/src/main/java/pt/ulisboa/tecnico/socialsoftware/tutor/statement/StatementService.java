@@ -7,12 +7,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuestionAnswerItem;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.QuestionAnswerItemList;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 
 import java.sql.SQLException;
 import java.util.List;
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_ALREADY_ANSWERED;
 
 @Service
 public class StatementService {
@@ -27,6 +30,10 @@ public class StatementService {
     public void submitAnswer(String username, int quizId, StatementAnswerDto answer) {
         if (answer.getTimeToSubmission() == null) {
             answer.setTimeToSubmission(0);
+        }
+
+        if (answer.getIsFinal() && questionAnswerItemRepository.findAnswersByQuizQuestionIdAndUser(answer.getQuizQuestionId(), answer.getUsername()).size() > 0) {
+            throw new TutorException(QUESTION_ALREADY_ANSWERED);
         }
 
         if (answer.emptyAnswer()) {

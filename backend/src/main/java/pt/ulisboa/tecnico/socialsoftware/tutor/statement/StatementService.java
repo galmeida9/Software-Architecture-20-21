@@ -206,8 +206,7 @@ public class StatementService {
             else {
                 return getFinalAnswers(new StatementQuizDto(quizAnswer), quizId, user.getUsername());
             }
-            StatementQuizDto dto = new StatementQuizDto(quizAnswer);
-            return dto;
+            return new StatementQuizDto(quizAnswer);
 
             // Send timer
         } else {

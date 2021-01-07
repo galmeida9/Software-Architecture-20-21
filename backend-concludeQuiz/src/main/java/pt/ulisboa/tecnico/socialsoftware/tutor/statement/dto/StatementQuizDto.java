@@ -16,6 +16,7 @@ public class StatementQuizDto implements Serializable {
     private Long timeToSubmission;
     private List<StatementQuestionDto> questions = new ArrayList<>();
     private List<StatementAnswerDto> answers = new ArrayList<>();
+    private String username;
 
     public StatementQuizDto() {}
 
@@ -101,6 +102,14 @@ public class StatementQuizDto implements Serializable {
 
     public void setAnswers(List<StatementAnswerDto> answers) {
         this.answers = answers;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
