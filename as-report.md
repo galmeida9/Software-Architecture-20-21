@@ -113,7 +113,7 @@ The major issue found was if someone exited the quiz, for example if the browser
 
 ### Architecture
 
-![Availability Architecture](report-resources/)
+![Availability Architecture](report-resources/availability-architecture.png)
 
 ### Scenarios
 A student initiates a quiz and answers to <x> questions and closes the browser.  The Quizzes tutor preserves the answers and the student can still answer the rest of the quiz if it is on its time. When the student returns to the quiz, the quizzes tutor gets the quiz with the answers already done with <x> milliseconds.
