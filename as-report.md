@@ -11,7 +11,7 @@
 
 **1)** After the login and within a period of 10s, 600 student users make a request stochasticly by inserting a code to get access to the quiz. The Quizzes Tutor, in normal operation, sends the quiz's questions to each user in less than 30 miliseconds.
 
-**2)** After accessing the quiz, 600 students wait until the end of the timer to start the quiz. All the students answer to the questions following a normal distribution and in the end conclude the quiz. The quizzes tutor receives the answers and the final submissions and saves, for each student, this information in a database in less than 15 miliseconds.
+**2)** After accessing the quiz, 600 students wait until the end of the timer to start the quiz. All the students answer to the questions following a normal distribution and in the end conclude the quiz. The Quizzes Tutor receives the answers and the final submissions and saves, for each student, this information in a database in less than 15 miliseconds.
   
 
 ### Tests
@@ -103,9 +103,43 @@ The backend now in order to get information about the answers has to communicate
 ![Scalability Architecture](report-resources/scalability-architecture.png)
 
 ### Scenarios
-With an increment of <x> students answering a quiz, the Quizzes tutor preserves the almost the same performance with a latency of <y> with the cost of using more servers.
+With an increment of <x> students answering a quiz, the Quizzes Tutor preserves the almost the same performance with a latency of <y> with the cost of using more servers.
 
 ### Tests
+
+To test scalability we used the [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx) test from perfomance, just adapting it to call the correct microservices.
+In this tests we just use one instance of each microservice.
+
+**Results:**
+
+This first test is the one that tried to simulate a real scenario where multiple students insert the code for the quiz at a random time between 1s and 10s. 
+
+* 300 students
+![300 Students at a random time 1s-10s](report-resources/scalability-2-microservices-300_rt.png)
+* 600 students
+![600 Students at a random time 1s-10s](report-resources/scalability-2-microservices-600_rt.png)
+* 1000 students
+![1000 Students at a random time 1s-10s](report-resources/scalability-2-microservices-1000_rt.png)
+* 2000 students
+![2000 Students at a random time 1s-10s](report-resources/scalability-2-microservices-2000_rt.png)
+
+**Conclusions:** We can see that with the microservices architecture even for a normal scenario response times are faster.
+
+
+The second test was the one that tried to simulate an unrealistic scenario where all the students get the quiz and answer the questions at the same time.
+
+* 300 students
+![300 Students at the same time](report-resources/scalability-2-microservices-300_st.png)
+* 600 students
+![600 Students at the same time](report-resources/scalability-2-microservices-600_st.png)
+* 1000 students
+![1000 Students at the same time](report-resources/scalability-2-microservices-1000_st.png)
+* 2000 students
+![2000 Students at the same time](report-resources/scalability-2-microservices-2000_st.png)
+
+**Conclusions:** In this second test, we can conclude that the average times for submiting an answer didn't change and the times for concluding a quiz increased a bit. But looking at the architecture view above we find that since each request is processed independently, we have the guarantee that it scales with the hardware, so deploying more instances of the microservices would decrease the average times. 
+
+
 
 ## Availability
 
@@ -116,7 +150,7 @@ The major issue found was if someone exited the quiz, for example if the browser
 ![Availability Architecture](report-resources/availability-architecture.png)
 
 ### Scenarios
-A student initiates a quiz and answers to <x> questions and closes the browser.  The Quizzes tutor preserves the answers and the student can still answer the rest of the quiz if it is on its time. When the student returns to the quiz, the quizzes tutor gets the quiz with the answers already done with <x> milliseconds.
+A student initiates a quiz and answers to <x> questions and closes the browser.  The Quizzes Tutor preserves the answers and the student can still answer the rest of the quiz if it is on its time. When the student returns to the quiz, the Quizzes Tutor gets the quiz with the answers already done with <x> milliseconds.
   
 ### Tests
 In these tests, 10% of the students exit the quiz, and return to it.
