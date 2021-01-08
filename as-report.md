@@ -140,6 +140,10 @@ The second test was the one that tried to simulate an unrealistic scenario where
 **Conclusions:** In this second test, we can conclude that the average times for submiting an answer didn't change and the times for concluding a quiz increased a bit. But looking at the architecture view above we find that since each request is processed independently, we have the guarantee that it scales with the hardware, so deploying more instances of the microservices would decrease the average times. 
 
 
+![Performance chart](report-resources/scalability_chart.png)
+
+From the chart we can conclude that even with only one instance of each microservice, the performance was improved and with more instances and hardware it can be further improved.
+
 
 ## Availability
 
@@ -151,6 +155,33 @@ The major issue found was if someone exited the quiz, for example if the browser
 
 ### Scenarios
 A student initiates a quiz and answers to <x> questions and closes the browser.  The Quizzes Tutor preserves the answers and the student can still answer the rest of the quiz if it is on its time. When the student returns to the quiz, the Quizzes Tutor gets the quiz with the answers already done with <x> milliseconds.
+  
+### Tests
+In these tests, 10% of the students exit the quiz, and return to it.
+
+Same as first performance test for 1000 students with thinking time
+![1000 Students at the same time](report-resources/)
+
+
+Same as second performance test with every student answering at the same time
+* 300 students
+![300 Students at the same time](report-resources/)
+* 600 students
+![600 Students at the same time](report-resources/)
+* 1000 students
+![1000 Students at the same time](report-resources/)
+
+## Security
+
+### Architecture
+
+![Availability Architecture](report-resources/security-architecture.png)
+
+### Scenarios
+**1)** A student submits a quiz once. Then he tries to submit again via other means, like Postman, since in the frontend we can only submit once. The second submission is rejected because he submit already once.
+**2)** A student gets the questions from other student or other means and tries to submit them out of order, the submission is rejected.
+**3)** A student tries to get the quizzes question through monitoring the HTTP requests in the network, he finds the correct request, but he cannot read it, because it is encrypted.
+**4)** A student submitted a question by clicking the arrow next in the user interface, but he realized that he made a mistake and tries to submit it through an HTTP request. It fails, because quiz tutor known that he already submitted that question as a his final answers.
   
 ### Tests
 In these tests, 10% of the students exit the quiz, and return to it.
