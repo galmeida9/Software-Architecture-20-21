@@ -115,13 +115,13 @@ In this tests we just use one instance of each microservice.
 This first test is the one that tried to simulate a real scenario where multiple students insert the code for the quiz at a random time between 1s and 10s. 
 
 * 300 students
-![300 Students at a random time 1s-10s](report-resources/scalability-2-microservices-300_rt.png)
+![300 Students at a random time 1s-10s](report-resources/scalability-2-microservices-300-rt.png)
 * 600 students
-![600 Students at a random time 1s-10s](report-resources/scalability-2-microservices-600_rt.png)
+![600 Students at a random time 1s-10s](report-resources/scalability-2-microservices-600-rt.png)
 * 1000 students
-![1000 Students at a random time 1s-10s](report-resources/scalability-2-microservices-1000_rt.png)
+![1000 Students at a random time 1s-10s](report-resources/scalability-2-microservices-1000-rt.png)
 * 2000 students
-![2000 Students at a random time 1s-10s](report-resources/scalability-2-microservices-2000_rt.png)
+![2000 Students at a random time 1s-10s](report-resources/scalability-2-microservices-2000-rt.png)
 
 **Conclusions:** We can see that with the microservices architecture even for a normal scenario response times are faster.
 
@@ -129,13 +129,13 @@ This first test is the one that tried to simulate a real scenario where multiple
 The second test was the one that tried to simulate an unrealistic scenario where all the students get the quiz and answer the questions at the same time.
 
 * 300 students
-![300 Students at the same time](report-resources/scalability-2-microservices-300_st.png)
+![300 Students at the same time](report-resources/scalability-2-microservices-300-st.png)
 * 600 students
-![600 Students at the same time](report-resources/scalability-2-microservices-600_st.png)
+![600 Students at the same time](report-resources/scalability-2-microservices-600-st.png)
 * 1000 students
-![1000 Students at the same time](report-resources/scalability-2-microservices-1000_st.png)
+![1000 Students at the same time](report-resources/scalability-2-microservices-1000-st.png)
 * 2000 students
-![2000 Students at the same time](report-resources/scalability-2-microservices-2000_st.png)
+![2000 Students at the same time](report-resources/scalability-2-microservices-2000-st.png)
 
 **Conclusions:** In this second test, we can conclude that the average times for submiting an answer didn't change and the times for concluding a quiz increased a bit. But looking at the architecture view above we find that since each request is processed independently, we have the guarantee that it scales with the hardware, so deploying more instances of the microservices would decrease the average times. 
 
