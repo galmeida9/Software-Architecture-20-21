@@ -491,6 +491,15 @@ export default class RemoteServices {
       });
   }
 
+  static async sendQuizOrder(statementQuiz: StatementQuiz) {
+    let sendStatement = { ...statementQuiz, questions: [] };
+    return httpClientConQuiz
+      .post(`/quizzes/${statementQuiz.id}/order`, sendStatement)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createTopic(topic: Topic): Promise<Topic> {
     return httpClient
       .post(

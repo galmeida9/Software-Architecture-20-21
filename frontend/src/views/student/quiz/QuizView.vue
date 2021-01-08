@@ -169,13 +169,19 @@ export default class QuizView extends Vue {
     if (!this.statementQuiz?.id) {
       await this.$router.push({ name: 'create-quiz' });
     } else {
+      let isReturning = false;
       this.resumeQuiz = true;
       this.statementQuiz.answers.forEach(answer => {
         if (answer.answerDetails.isQuestionAnswered()) {
+          isReturning = true;
           this.increaseOrder();
         }
       });
       this.resumeQuiz = false;
+
+      if (!isReturning) {
+        RemoteServices.sendQuizOrder(this.statementQuiz);
+      }
     }
   }
 

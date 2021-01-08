@@ -16,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuizAnswerItem;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.domain.QuizAnswerItemOrder;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
 
 import java.sql.SQLException;
@@ -32,6 +34,8 @@ public class StatementService {
     @Autowired
     private QuizAnswerItemRepository quizAnswerItemRepository;
 
+    @Autowired
+    private QuizQuestionOrderRepository quizQuestionOrderRepository;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -57,6 +61,7 @@ public class StatementService {
             throw new TutorException(QUIZ_ALREADY_COMPLETED);
         }
 
+        confirmQuestionOrder(statementQuizDto);
         QuizAnswerItem quizAnswerItem = new QuizAnswerItem(statementQuizDto);
         quizAnswerItemRepository.save(quizAnswerItem);
     }
@@ -91,5 +96,29 @@ public class StatementService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void deleteQuizAnswerItemById(int quizId) {
         quizAnswerItemRepository.deleteById(quizId);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 2000))
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void saveQuestionOrder(StatementQuizDto statementQuizDto) {
+        quizQuestionOrderRepository.save(new QuizAnswerItemOrder(statementQuizDto));
+    }
+
+    private void confirmQuestionOrder(StatementQuizDto statementQuizDto) {
+        List<StatementAnswerDto> answers = statementQuizDto.getAnswers();
+        List<StatementAnswerDto> order = quizQuestionOrderRepository.findQuestionOrderByQuizIdAndUser(statementQuizDto.getId(), statementQuizDto.getUsername()).get(0).getAnswersList();
+
+        if (answers.size() != order.size()) {
+            throw new TutorException(INVALID_SEQUENCE_FOR_QUESTION_ANSWER);
+        }
+        else {
+            for (int i = 0; i < answers.size(); i++) {
+                if (!answers.get(i).getQuizQuestionId().equals(order.get(i).getQuizQuestionId())) {
+                    throw new TutorException(INVALID_SEQUENCE_FOR_QUESTION_ANSWER);
+                }
+            }
+        }
     }
 }

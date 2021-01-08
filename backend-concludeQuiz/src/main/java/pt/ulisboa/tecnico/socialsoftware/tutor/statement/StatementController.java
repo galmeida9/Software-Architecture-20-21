@@ -38,4 +38,9 @@ public class StatementController {
         statementService.concludeQuiz(statementQuizDto);
         statementService.completeQuiz(statementQuizDto.getQuizAnswerId());
     }
+
+    @PostMapping("/quizzes/{quizId}/order")
+    public void saveQuestionOrder(@PathVariable int quizId, @RequestBody StatementQuizDto statementQuizDto) {
+        statementService.saveQuestionOrder(statementQuizDto);
+    }
 }
