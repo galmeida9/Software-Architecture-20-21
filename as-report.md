@@ -248,6 +248,6 @@ All students at the same time:
 * 600 students
 ![600 Students at the same time](report-resources/security-600-st.png)
 * 1000 students
-![1000 Students at the same time](report-resources/security-1000-rt.png)
+![1000 Students at the same time](report-resources/security-1000-st.png)
 
 **Conclusions:** 
