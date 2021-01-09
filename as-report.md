@@ -203,8 +203,11 @@ Same as second performance test with every student answering at the same time
 
 ### 4.1 Scenarios
 **1)** A student attempts  to submit two times the answers to the same quiz. A student submits a quiz once. Then he tries to submit again via other means, like Postman, since in the frontend we can only submit once. The second submission is rejected because he submitted already once.
+
 **2)** A student gets the questions from other student or other means and tries to submit them out of order, the submission is rejected.
+
 **3)** A student attempts to get the quizzes question through monitoring the HTTP requests in the network, he finds the correct request, but he cannot read it, because that data is encrypted.
+
 **4)** A student attempts to answer again a question. The student submitted a question by clicking the arrow next in the user interface, but he realized that he made a mistake and tries to submit it through an HTTP request. It fails, because quiz tutor known that he already submitted that question as a his final answers.
 
 ### 4.2 Architecture
