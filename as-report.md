@@ -114,25 +114,25 @@ In the chart above we can observe that the performance almost follows a linear d
 
 ## 2. Scalability
 
-Analysing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Initially we tried a monolithic approach, where each thread had a table to store the answers, but this approach only scaled vertically, and if it were horizontally scaled would make increasing the performance easier, the solution was microservices, since we only needed to boot more instances of a microservice and add more hardware to easily increase performance without much effort. Therefore, we made the following changes:
-* Created a microservice to handle the submission of answers, with its own database to store the submissions.
-* Created a microservice to handle the submission of final quizzes' answers, with its own database to store the answers.
+Analyzing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Initially we tried a monolithic approach, where each thread had a table to store the answers, but this approach only scaled vertically, and if it were horizontally scaled would make increasing the performance easier, the solution was micro services, since we only needed to boot more instances of a micro service and add more hardware to easily increase performance without much effort. Therefore, we made the following changes:
+* Created a micro service to handle the submission of answers, with its own database to store the submissions.
+* Created a micro service to handle the submission of final quizzes' answers, with its own database to store the answers.
 
-The backend now in order to get information about the answers has to communicate with the microservice that has that information to get it, has we can see in the architecture developed below.
+The backend now in order to get information about the answers has to communicate with the micro service that has that information to get it, has we can see in the architecture developed below.
 
 ### 2.1 Architecture
 
 ![Scalability Architecture](report-resources/scalability-architecture.png)
 
-As showed above we can use multiple copies of computation tactic with micro services to address the performance issue when we have a lot of simultaneous users, the results obtain, as we will see, surpassed our expectation, since with only on instance of each micro service the performance was increased by 15% with 2000 students.
+As showed above we can use multiple copies of computation tactic with micro services to address the performance issue when we have a lot of simultaneous users, the results obtain, as we will see, surpassed our expectation, since with only on instance of each micro service the performance was increased by 15% with 2500 students.
 
 ### 2.2 Scenarios
-With an increment of <x> students answering a quiz, the Quizzes Tutor preserves the almost the same performance with a latency of <y> with the cost of using more servers.
+With an increment of 1000 students answering a quiz, the Quizzes Tutor preserves the almost the same performance with a latency of 200 milliseconds with the cost of using more servers.
 
 ### 2.3 Tests
 
-To test scalability we used the [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx) test from perfomance, just adapting it to call the correct microservices.
-In this tests we just use one instance of each microservice.
+To test scalability we used the [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx) test from performance, just adapting it to call the correct micro services.
+In this tests we just use one instance of each micro service.
 
 Same as first performance test for 1000 students with thinking time
 ![1000 Students at the same time](report-resources/scalability-2-microservices-1000-rt.png)
@@ -150,7 +150,7 @@ This first test is the one that tried to simulate a real scenario where multiple
 * 2000 students
 ![2000 Students at a random time 1s-10s](report-resources/scalability-2-microservices-2000-rt.png)
 
-**Conclusions:** We can see that with the microservices architecture even for a normal scenario response times are faster.
+**Conclusions:** We can see that with the micro services architecture even for a normal scenario response times are faster.
 
 
 The second test was the one that tried to simulate an unrealistic scenario where all the students get the quiz and answer the questions at the same time.
@@ -164,12 +164,12 @@ The second test was the one that tried to simulate an unrealistic scenario where
 * 2000 students
 ![2000 Students at the same time](report-resources/scalability-2-microservices-2000-st.png)
 
-**Conclusions:** In this second test, we can conclude that the average times for submiting an answer didn't change and the times for concluding a quiz increased a bit. But looking at the architecture view above we find that since each request is processed independently, we have the guarantee that it scales with the hardware, so deploying more instances of the microservices would decrease the average times. 
+**Conclusions:** In this second test, we can conclude that the average times for submitting an answer didn't change and the times for concluding a quiz increased a bit for a low number of users. For a lot of simultaneous users (1000+), times started to decrease. Looking at the architecture view above we find that since each request is processed independently, we have the guarantee that it scales with the hardware, so deploying more instances of the microservices would decrease the average times. 
 
 
 ![Performance chart](report-resources/scalability_chart.png)
 
-From the chart we can conclude that even with only one instance of each microservice, the performance was improved and with more instances and hardware it can be further improved.
+From the chart we can conclude that even with only one instance of each micro service, the performance was improved and with more instances and hardware it can be further improved.
 
 
 ## 3. Availability
@@ -181,7 +181,7 @@ The major issue found was if someone exited the quiz, for example if the browser
 ![Availability Architecture](report-resources/availability-architecture.png)
 
 ### 3.2 Scenarios
-A student initiates a quiz and answers to <x> questions and closes the browser.  The Quizzes Tutor preserves the answers and the student can still answer the rest of the quiz if it is on its time. When the student returns to the quiz, the Quizzes Tutor gets the quiz with the answers already done with <x> milliseconds.
+A student initiates a quiz and answers to any number of questions (excluding the last one) and closes the browser.  The Quizzes Tutor preserves the answers and the student can still answer the rest of the quiz if it is on time. When the student returns to the quiz, the Quizzes Tutor gets the quiz with the answers already done with 200 milliseconds.
   
 ### 3.3 Tests
 In these tests, 10% of the students exit the quiz, and return to it.
