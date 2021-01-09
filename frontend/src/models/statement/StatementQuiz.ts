@@ -1,6 +1,11 @@
 import StatementQuestion from '@/models/statement/StatementQuestion';
 import StatementAnswer from '@/models/statement/StatementAnswer';
 import { ISOtoString } from '@/services/ConvertDateService';
+const CryptoJS = require('crypto-js');
+const Hex = require('crypto-js/enc-hex');
+const Base64 = require('crypto-js/enc-base64');
+const Latin1 = require('crypto-js/enc-latin1');
+const AES = require('crypto-js/aes');
 
 export default class StatementQuiz {
   id!: number;
@@ -20,8 +25,21 @@ export default class StatementQuiz {
   private lastTimeCalled: number = Date.now();
   private timerId!: number;
 
-  constructor(jsonObj?: StatementQuiz) {
-    if (jsonObj) {
+  constructor(data: any) {
+    if (data) {
+      let key = Hex.parse(process.env.VUE_APP_AES_HEX_KEY);
+
+      let iv = Base64.parse(data.iv);
+      let rawData = Base64.parse(data.data);
+
+      let plaintextData = AES.decrypt({ ciphertext: rawData }, key, {
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+        iv: iv
+      });
+      let plaintext = plaintextData.toString(Latin1);
+      let jsonObj: StatementQuiz = JSON.parse(plaintext);
+
       this.id = jsonObj.id;
       this.courseName = jsonObj.courseName;
       this.quizAnswerId = jsonObj.quizAnswerId;

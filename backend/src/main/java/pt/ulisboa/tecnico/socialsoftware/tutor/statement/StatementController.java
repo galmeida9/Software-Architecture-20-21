@@ -7,11 +7,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.CorrectAnswerDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.api.TopicController;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.EncryptionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.SolvedQuizDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementCreationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
@@ -19,8 +18,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
-
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
 
 @RestController
 public class StatementController {
@@ -54,10 +51,11 @@ public class StatementController {
 
     @GetMapping("/quizzes/{quizId}/byqrcode")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public StatementQuizDto getQuizByQRCode(Principal principal, @PathVariable int quizId) {
+    public EncryptionDto getQuizByQRCode(Principal principal, @PathVariable int quizId) {
         User user = (User) ((Authentication) principal).getPrincipal();
 
-        return statementService.getQuizByQRCode(user.getId(), quizId);
+        StatementQuizDto quiz = statementService.getQuizByQRCode(user.getId(), quizId);
+        return new EncryptionDto(quiz);
     }
 
     @GetMapping("/quizzes/{quizId}/start")
