@@ -213,8 +213,11 @@ Same as second performance test with every student answering at the same time
 
 We did the following to achieve the scenarios above:
 **1)** To solve this scenario we added a column in the table used to save each quiz submission (*quiz_answer_item*) to save the username of the student, then we someone tries to submit a quiz, we verify if there is already a submission for that quiz ID and for that user, if there is, it is declined. To do this the **limit access** tactic was used.
+
 **2)** For this, when the quiz starts, the frontend sends to the *Conclude Quiz* micro service the quiz with the order of the questions, so when we try to conclude a quiz, the order of the questions is checked before accepting the submission. To comply with the scenario, the **limit access** tactic was used.
+
 **3)** This was a major vulnerability, where anyone could see all the questions in the quiz, merely by monitoring the requests in the browser, to fix this issue we encrypt the data in the backend and send it to the frontend, where it decrypts it. To achieve this the **encrypt data** tactic was used.
+
 **4)** We used a similar approach to the second scenario, where we check if the user already submitted a final answer to a given question, if so, it is rejected. To do this the **limit access** tactic was used.
   
 ### 4.3 Tests
