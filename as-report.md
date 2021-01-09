@@ -7,8 +7,8 @@ In this report we analyse and address the qualities associated with the function
     1. [Architecture](#11-architecture)
     2. [Scenarios](#12-scenarios)
     3. [Tests](#13-tests)
-        1. [Get quiz with code](#131-get-quiz-with-codebackendjmeteranswerget-quizzesjmx)
-        2. [Quiz answering with code](#132-quiz-answering-with-codebackendjmeteranswerquiz-answer-with-codejmx)
+        1. [Get quiz with code](#131)
+        2. [Quiz answering with code](#132)
 2. [Scalability](#2-scalability)
     1. [Architecture](#21-architecture)
     2. [Scenarios](#22-scenarios)
@@ -38,7 +38,7 @@ This architecture represents the current architecture of Quizzes Tutor, since as
 
 ### 1.3 Tests
 
-#### 1.3.1 [Get quiz with code](backend/jmeter/answer/get-quizzes.jmx)
+#### <a id="131"></a> 1.3.1 [Get quiz with code](backend/jmeter/answer/get-quizzes.jmx)
 
 * The teacher logs in, creates the questions and makes the quiz
 * 1000 students log in
@@ -72,7 +72,7 @@ This second test tried to simulate a limit scenario where all the students inser
 **Conclusions:** This time we can see that the average time it takes to get a quiz is proportional to the number of students. We did not address this slight performance issue, since in a real scenario the students enter the quiz code with a couple of minutes in advance, if it were any faster than it is now, it would not make any difference because they would not notice that. As we can see above, even if all the students enter at the same time, for 1000 it would take in average 2.4s to get a quiz, but since they enter at least one minute or more before the start of the quiz, it is not an issue. 
 
 
-#### 1.3.2 [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx)
+#### <a id="132"></a> 1.3.2 [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx)
 
 * The teacher logs in, creates the questions and makes the quiz
 * 1000 students log in
