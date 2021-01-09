@@ -185,19 +185,26 @@ A student initiates a quiz and answers to any number of questions (excluding the
 To address this situation each time a user goes to the next question, we save it in the *Submit Answer* micro service as a "*final answer*", in other words, as the final answer of the student to a given question, so if he exits the quiz because he misclicked or his browser crashed, if he tries to reenter the quiz, from his final answers we can reconstruct where he left on the quiz, leaving him exactly where he left. To achieve this the **Rollback** tactic was used.
   
 ### 3.3 Tests
-In these tests, 10% of the students exit the quiz, and return to it.
+In these tests we adapted the previous ones, such that 10% of the students get the quiz by qr code, answer to 2 questions and then "exit the quiz" by getting the quiz by qr code again, finally they answer to the last 3 questions.
 
-Same as first performance test for 1000 students with thinking time
-![1000 Students at the same time](report-resources/)
-
-
-Same as second performance test with every student answering at the same time
+Real scenario test:
 * 300 students
-![300 Students at the same time](report-resources/)
+![300 Students at the same time](report-resources/availability-300-rt.png)
 * 600 students
-![600 Students at the same time](report-resources/)
+![600 Students at the same time](report-resources/availability-600-rt.png)
 * 1000 students
-![1000 Students at the same time](report-resources/)
+![1000 Students at the same time](report-resources/availability-1000-rt.png)
+
+
+All students at the same time:
+* 300 students
+![300 Students at the same time](report-resources/availability-300-st.png)
+* 600 students
+![600 Students at the same time](report-resources/availability-600-st.png)
+* 1000 students
+![1000 Students at the same time](report-resources/availability-1000-st.png)
+
+**Conclusions:** 
 
 ## 4. Security
 
@@ -224,16 +231,23 @@ We did the following to achieve the scenarios above:
 **4)** We used a similar approach to the second scenario, where we check if the user already submitted a final answer to a given question, if so, it is rejected. To do this the **Limit Access** tactic was used.
   
 ### 4.3 Tests
-In these tests, 10% of the students exit the quiz, and return to it.
+First we used the same tests from Performance and Scalabity to check how much our changes impacted the performance of the system.
 
-Same as first performance test for 1000 students with thinking time
-![1000 Students at the same time](report-resources/)
-
-
-Same as second performance test with every student answering at the same time
+Real scenario test:
 * 300 students
-![300 Students at the same time](report-resources/)
+![300 Students at the same time](report-resources/security-300-rt.png)
 * 600 students
-![600 Students at the same time](report-resources/)
+![600 Students at the same time](report-resources/security-600-rt.png)
 * 1000 students
-![1000 Students at the same time](report-resources/)
+![1000 Students at the same time](report-resources/security-1000-rt.png)
+
+
+All students at the same time:
+* 300 students
+![300 Students at the same time](report-resources/security-300-st.png)
+* 600 students
+![600 Students at the same time](report-resources/security-600-st.png)
+* 1000 students
+![1000 Students at the same time](report-resources/security-1000-rt.png)
+
+**Conclusions:** 
