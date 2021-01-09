@@ -134,6 +134,9 @@ With an increment of <x> students answering a quiz, the Quizzes Tutor preserves 
 To test scalability we used the [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx) test from perfomance, just adapting it to call the correct microservices.
 In this tests we just use one instance of each microservice.
 
+Same as first performance test for 1000 students with thinking time
+![1000 Students at the same time](report-resources/scalability-2-microservices-1000-rt.png)
+
 **Results:**
 
 This first test is the one that tried to simulate a real scenario where multiple students insert the code for the quiz at a random time between 1s and 10s. 

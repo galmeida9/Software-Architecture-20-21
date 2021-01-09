@@ -25,6 +25,7 @@ public class StatementQuizDto implements Serializable {
     private Long timeToSubmission;
     private List<StatementQuestionDto> questions = new ArrayList<>();
     private List<StatementAnswerDto> answers = new ArrayList<>();
+    private String username;
 
     public StatementQuizDto() {}
 
@@ -36,6 +37,7 @@ public class StatementQuizDto implements Serializable {
         this.timed = quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS);
         this.availableDate = DateHandler.toISOString(quizAnswer.getQuiz().getAvailableDate());
         this.conclusionDate = DateHandler.toISOString(quizAnswer.getQuiz().getConclusionDate());
+        this.username = quizAnswer.getUser().getUsername();
 
         if (quizAnswer.getQuiz().getConclusionDate() != null && (quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS) || quizAnswer.getQuiz().getType().equals(Quiz.QuizType.TOURNAMENT))) {
             this.timeToSubmission = ChronoUnit.MILLIS.between(DateHandler.now(), quizAnswer.getQuiz().getConclusionDate());
@@ -134,6 +136,14 @@ public class StatementQuizDto implements Serializable {
 
     public void setAnswers(List<StatementAnswerDto> answers) {
         this.answers = answers;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override

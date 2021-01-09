@@ -54,6 +54,70 @@ httpClient.interceptors.response.use(
   error => Promise.reject(error)
 );
 
+const httpClientSubAnswer = axios.create();
+httpClientSubAnswer.defaults.timeout = 100000;
+httpClientSubAnswer.defaults.baseURL = 'http://localhost:8079';
+httpClientSubAnswer.defaults.headers.post['Content-Type'] = 'application/json';
+httpClientSubAnswer.interceptors.request.use(
+  config => {
+    if (!config.headers.Authorization) {
+      const token = Store.getters.getToken;
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  error => Promise.reject(error)
+);
+httpClientSubAnswer.interceptors.response.use(
+  response => {
+    if (response.data.notification) {
+      if (response.data.notification.errorMessages.length)
+        Store.dispatch(
+          'notification',
+          response.data.notification.errorMessages
+        );
+      response.data = response.data.response;
+    }
+    return response;
+  },
+  error => Promise.reject(error)
+);
+
+const httpClientConQuiz = axios.create();
+httpClientConQuiz.defaults.timeout = 100000;
+httpClientConQuiz.defaults.baseURL = 'http://localhost:8078';
+httpClientConQuiz.defaults.headers.post['Content-Type'] = 'application/json';
+httpClientConQuiz.interceptors.request.use(
+  config => {
+    if (!config.headers.Authorization) {
+      const token = Store.getters.getToken;
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  error => Promise.reject(error)
+);
+httpClientConQuiz.interceptors.response.use(
+  response => {
+    if (response.data.notification) {
+      if (response.data.notification.errorMessages.length)
+        Store.dispatch(
+          'notification',
+          response.data.notification.errorMessages
+        );
+      response.data = response.data.response;
+    }
+    return response;
+  },
+  error => Promise.reject(error)
+);
+
 export default class RemoteServices {
   static async fenixLogin(code: string): Promise<AuthDto> {
     return httpClient
@@ -393,9 +457,11 @@ export default class RemoteServices {
   }
 
   static submitAnswer(quizId: number, answer: StatementAnswer) {
-    httpClient.post(`/quizzes/${quizId}/submit`, answer).catch(error => {
-      console.debug(error);
-    });
+    httpClientSubAnswer
+      .post(`/quizzes/${quizId}/submit`, answer)
+      .catch(error => {
+        console.debug(error);
+      });
   }
 
   static async concludeQuiz(
@@ -411,6 +477,24 @@ export default class RemoteServices {
           });
         }
       })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async concludeTimedQuiz(statementQuiz: StatementQuiz) {
+    let sendStatement = { ...statementQuiz, questions: [] };
+    return httpClientConQuiz
+      .post(`/quizzes/${statementQuiz.id}/conclude`, sendStatement)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async sendQuizOrder(statementQuiz: StatementQuiz) {
+    let sendStatement = { ...statementQuiz, questions: [] };
+    return httpClientConQuiz
+      .post(`/quizzes/${statementQuiz.id}/order`, sendStatement)
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });

@@ -14,6 +14,8 @@ public class StatementAnswerDto implements Serializable {
     private DiscussionDto userDiscussion;
     private Integer quizQuestionId;
     private Integer timeToSubmission;
+    private String username;
+    private Boolean isFinal;
 
     private StatementAnswerDetailsDto answerDetails;
 
@@ -91,6 +93,22 @@ public class StatementAnswerDto implements Serializable {
 
     public void setUserDiscussion(DiscussionDto userDiscussion) {
         this.userDiscussion = userDiscussion;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Boolean getIsFinal() {
+        return isFinal;
+    }
+
+    public void setIsFinal(Boolean aFinal) {
+        isFinal = aFinal;
     }
 
     @Override

@@ -19,6 +19,10 @@ public class MultipleChoiceStatementAnswerDetailsDto extends StatementAnswerDeta
         }
     }
 
+    public MultipleChoiceStatementAnswerDetailsDto(MultipleChoiceAnswerItem questionAnswer) {
+        this.optionId = questionAnswer.getOptionId();
+    }
+
     public Integer getOptionId() {
         return optionId;
     }

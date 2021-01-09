@@ -163,16 +163,38 @@ export default class QuizView extends Vue {
   questionOrder: number = 0;
   hideTime: boolean = false;
   quizSubmitted: boolean = false;
+  resumeQuiz: boolean = false;
 
   async created() {
     if (!this.statementQuiz?.id) {
       await this.$router.push({ name: 'create-quiz' });
+    } else {
+      let isReturning = false;
+      this.resumeQuiz = true;
+      this.statementQuiz.answers.forEach(answer => {
+        if (answer.answerDetails.isQuestionAnswered()) {
+          isReturning = true;
+          this.increaseOrder();
+        }
+      });
+      this.resumeQuiz = false;
+
+      if (!isReturning) {
+        RemoteServices.sendQuizOrder(this.statementQuiz);
+      }
     }
   }
 
   increaseOrder(): void {
     if (this.questionOrder + 1 < +this.statementQuiz!.questions.length) {
       this.calculateTime();
+      if (this.statementQuiz?.oneWay && !this.resumeQuiz) {
+        let newAnswer = this.statementQuiz.answers[this.questionOrder];
+        newAnswer.timeToSubmission = this.statementQuiz.timeToSubmission;
+        newAnswer.username = this.$store.getters.getUser.username;
+        newAnswer.isFinal = true;
+        RemoteServices.submitAnswer(this.statementQuiz.id, newAnswer);
+      }
       this.questionOrder += 1;
     }
     this.nextConfirmationDialog = false;
@@ -202,6 +224,8 @@ export default class QuizView extends Vue {
 
         if (!!this.statementQuiz && this.statementQuiz.timed) {
           newAnswer.timeToSubmission = this.statementQuiz.timeToSubmission;
+          newAnswer.username = this.$store.getters.getUser.username;
+          newAnswer.isFinal = false;
           RemoteServices.submitAnswer(this.statementQuiz.id, newAnswer);
         }
       } catch (error) {
@@ -236,6 +260,15 @@ export default class QuizView extends Vue {
     await this.$store.dispatch('loading');
     try {
       this.calculateTime();
+
+      if (this.statementQuiz?.oneWay) {
+        let newAnswer = this.statementQuiz.answers[this.questionOrder];
+        newAnswer.timeToSubmission = this.statementQuiz.timeToSubmission;
+        newAnswer.username = this.$store.getters.getUser.username;
+        newAnswer.isFinal = true;
+        RemoteServices.submitAnswer(this.statementQuiz.id, newAnswer);
+      }
+
       this.confirmed = true;
       await this.statementManager.concludeQuiz();
 

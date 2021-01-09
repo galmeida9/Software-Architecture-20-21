@@ -286,25 +286,25 @@ public class Quiz implements DomainEntity {
         this.quizAnswers.add(quizAnswer);
     }
 
-    @Override
-    public String toString() {
-        return "Quiz{" +
-                "id=" + id +
-                ", key=" + key +
-                ", creationDate=" + creationDate +
-                ", availableDate=" + availableDate +
-                ", conclusionDate=" + conclusionDate +
-                ", resultsDate=" + resultsDate +
-                ", scramble=" + scramble +
-                ", qrCodeOnly=" + qrCodeOnly +
-                ", oneWay=" + oneWay +
-                ", title='" + title + '\'' +
-                ", type=" + type +
-                ", series=" + series +
-                ", version='" + version + '\'' +
-                ", quizQuestions=" + quizQuestions +
-                '}';
-    }
+    // @Override
+    // public String toString() {
+    //     return "Quiz{" +
+    //             "id=" + id +
+    //             ", key=" + key +
+    //             ", creationDate=" + creationDate +
+    //             ", availableDate=" + availableDate +
+    //             ", conclusionDate=" + conclusionDate +
+    //             ", resultsDate=" + resultsDate +
+    //             ", scramble=" + scramble +
+    //             ", qrCodeOnly=" + qrCodeOnly +
+    //             ", oneWay=" + oneWay +
+    //             ", title='" + title + '\'' +
+    //             ", type=" + type +
+    //             ", series=" + series +
+    //             ", version='" + version + '\'' +
+    //             ", quizQuestions=" + quizQuestions +
+    //             '}';
+    // }
 
     private void generateKeys() {
         int max = this.courseExecution.getQuizzes().stream()

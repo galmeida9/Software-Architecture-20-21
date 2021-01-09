@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -14,11 +14,6 @@
     <hashTree>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
-          <elementProp name="testHome" elementType="Argument">
-            <stringProp name="Argument.name">testHome</stringProp>
-            <stringProp name="Argument.value">${__BeanShell(import org.apache.jmeter.services.FileServer fileserver.getFileServer().getBaseDir();)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="live-server" elementType="Argument">
             <stringProp name="Argument.name">live-server</stringProp>
             <stringProp name="Argument.value">quizzes-tutor.tecnico.ulisboa.pt</stringProp>
@@ -47,6 +42,16 @@
           <elementProp name="port" elementType="Argument">
             <stringProp name="Argument.name">port</stringProp>
             <stringProp name="Argument.value">8080</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="port-submitAnswer" elementType="Argument">
+            <stringProp name="Argument.name">port-submitAnswer</stringProp>
+            <stringProp name="Argument.value">8079</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="port-concludeQuiz" elementType="Argument">
+            <stringProp name="Argument.name">port-concludeQuiz</stringProp>
+            <stringProp name="Argument.value">8078</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="protocol" elementType="Argument">
@@ -317,9 +322,12 @@ ZonedDateTime startDate = ZonedDateTime.now();
 ZonedDateTime finishDate = startDate.plusMinutes(7);
 String start = startDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 String end = finishDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+String start2 = startDate.format(&quot;yyyy-MM-dd H:m&quot;);
+String end2 = finishDate.format(&quot;yyyy-MM-dd H:m&quot;);
 vars.put(&quot;startTime&quot;, start);
-props.put(&quot;startTime&quot;, start);
-vars.put(&quot;endTime&quot;, end);</stringProp>
+props.put(&quot;startTime&quot;, start2);
+vars.put(&quot;endTime&quot;, end);
+props.put(&quot;endTime&quot;, end2);</stringProp>
             </JSR223PreProcessor>
             <hashTree/>
             <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Get quiz id" enabled="true">
@@ -735,12 +743,12 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Synchronizing Timer" enabled="true">
+          <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Synchronizing Timer" enabled="false">
             <intProp name="groupSize">0</intProp>
             <longProp name="timeoutInMs">0</longProp>
           </SyncTimer>
           <hashTree/>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Random Timer" enabled="false">
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Random Timer" enabled="true">
             <stringProp name="ConstantTimer.delay">${__Random(1000, 10000)}</stringProp>
           </ConstantTimer>
           <hashTree/>
@@ -798,8 +806,8 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
               <stringProp name="ConstantTimer.delay">${__Random(1, 1000)}</stringProp>
             </ConstantTimer>
             <hashTree/>
-            <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="false">
-              <stringProp name="ConstantTimer.delay">35000</stringProp>
+            <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="true">
+              <stringProp name="ConstantTimer.delay">10000</stringProp>
               <stringProp name="RandomTimer.range">5000</stringProp>
             </GaussianRandomTimer>
             <hashTree/>
@@ -827,7 +835,7 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
                 </collectionProp>
               </elementProp>
               <stringProp name="HTTPSampler.domain">${server}</stringProp>
-              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.port">${port-submitAnswer}</stringProp>
               <stringProp name="HTTPSampler.protocol">${protocol}</stringProp>
               <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
               <stringProp name="HTTPSampler.path">${prefix}/quizzes/${__property(quiz_id)}/submit</stringProp>
@@ -856,8 +864,8 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
 &quot;quizAnswerId&quot;:${quiz_answer_id},&#xd;
 &quot;title&quot;:&quot;XXXX&quot;,&#xd;
 &quot;oneWay&quot;:false,&#xd;
-&quot;availableDate&quot;:&quot;${startTime}&quot;,&#xd;
-&quot;conclusionDate&quot;:&quot;-&quot;,&#xd;
+&quot;availableDate&quot;:&quot;${__property(startTime)}&quot;,&#xd;
+&quot;conclusionDate&quot;:&quot;${__property(endTime)}&quot;,&#xd;
 &quot;timeToAvailability&quot;:null,&#xd;
 &quot;timeToSubmission&quot;:null,&#xd;
 &quot;timeToResults&quot;:null&#xd;
@@ -867,7 +875,7 @@ vars.put(&quot;endTime&quot;, end);</stringProp>
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${server}</stringProp>
-          <stringProp name="HTTPSampler.port">${port}</stringProp>
+          <stringProp name="HTTPSampler.port">${port-concludeQuiz}</stringProp>
           <stringProp name="HTTPSampler.protocol">${protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">${prefix}/quizzes/${__property(quiz_id)}/conclude</stringProp>

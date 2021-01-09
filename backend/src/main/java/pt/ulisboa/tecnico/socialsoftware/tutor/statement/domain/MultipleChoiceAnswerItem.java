@@ -10,15 +10,21 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
-@Entity
-@DiscriminatorValue(Question.QuestionTypes.MULTIPLE_CHOICE_QUESTION)
+//@Entity
+//@DiscriminatorValue(Question.QuestionTypes.MULTIPLE_CHOICE_QUESTION)
 public class MultipleChoiceAnswerItem extends QuestionAnswerItem {
 
     private Integer optionId;
 
     public MultipleChoiceAnswerItem() {
+    }
+
+    public MultipleChoiceAnswerItem(Integer id, Integer quizId, String username, Integer quizQuestionId, LocalDateTime answerDate, Integer timeTaken, Integer timeToSubmission, Integer optionId) {
+        super(id, quizId, username, quizQuestionId, answerDate, timeTaken, timeToSubmission);
+        this.optionId = optionId;
     }
 
     public MultipleChoiceAnswerItem(String username, int quizId, StatementAnswerDto answer, MultipleChoiceStatementAnswerDetailsDto detailsDto) {

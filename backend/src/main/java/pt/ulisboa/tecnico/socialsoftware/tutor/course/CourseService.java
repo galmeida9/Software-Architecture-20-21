@@ -1,11 +1,15 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.course;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.Demo;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.domain.Course;
@@ -14,7 +18,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.dto.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.repository.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.repository.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.statement.QuestionAnswerItemRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser;
@@ -22,7 +25,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.auth.dto.ExternalUserDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.StudentDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.repository.AuthUserRepository;
 
-import java.io.ByteArrayOutputStream;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,7 +46,7 @@ public class CourseService {
     private AuthUserRepository authUserRepository;
 
     @Autowired
-    private QuestionAnswerItemRepository questionAnswerItemRepository;
+    private RestTemplate restTemplate;
 
     @Retryable(
             value = { SQLException.class },
@@ -137,10 +139,19 @@ public class CourseService {
                 authUser.remove();
                 authUserRepository.delete(authUser);
                 String newUsername = user.getUsername();
-                questionAnswerItemRepository.updateQuestionAnswerItemUsername(oldUsername, newUsername);
-                String role = user.getRole().toString();
-                String roleCapitalized = role.substring(0, 1).toUpperCase() + role.substring(1).toLowerCase();
-                user.setName(String.format("%s %s", roleCapitalized, user.getId()));
+
+                //questionAnswerItemRepository.updateQuestionAnswerItemUsername(oldUsername, newUsername);
+
+                HttpEntity<String> request = new HttpEntity<>(newUsername);
+
+                ResponseEntity<String> response = restTemplate.postForEntity(
+                        "http://localhost:8079/anonymize/" + oldUsername, request, String.class);
+
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    String role = user.getRole().toString();
+                    String roleCapitalized = role.substring(0, 1).toUpperCase() + role.substring(1).toLowerCase();
+                    user.setName(String.format("%s %s", roleCapitalized, user.getId()));
+                }
             }
         }
     }

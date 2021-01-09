@@ -11,6 +11,8 @@ export default class StatementAnswer {
   public quizQuestionId!: number;
   public userDiscussion?: Discussion;
   public timeToSubmission: number | null = null;
+  public username: string = '';
+  public isFinal: boolean = false;
 
   answerDetails: StatementAnswerDetails = new MultipleChoiceStatementAnswerDetails();
 
@@ -20,6 +22,7 @@ export default class StatementAnswer {
       this.sequence = jsonObj.sequence;
       this.questionAnswerId = jsonObj.questionAnswerId;
       this.quizQuestionId = jsonObj.quizQuestionId;
+      this.isFinal = jsonObj.isFinal;
 
       this.answerDetails = QuestionFactory.getFactory(
         jsonObj.answerDetails.type

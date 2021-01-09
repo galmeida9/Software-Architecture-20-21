@@ -15,4 +15,7 @@ public interface QuizAnswerItemRepository extends JpaRepository<QuizAnswerItem, 
 
     @Query(value = "SELECT qaq FROM QuizAnswerItem qaq WHERE qaq.quizId = :quizId")
     List<QuizAnswerItem> findQuizAnswerItemsByQuizId(Integer quizId);
+
+    @Query(value = "SELECT qaq FROM QuizAnswerItem qaq WHERE qaq.quizId = :quizId AND qaq.username = :user")
+    List<QuizAnswerItem> findAnswersByQuizIdAndUser(Integer quizId, String user);
 }

@@ -24,10 +24,13 @@ export default class StatementManager {
   }
 
   async concludeQuiz() {
-    if (this.statementQuiz) {
+    if (this.statementQuiz) console.log(this.statementQuiz.timed);
+    if (this.statementQuiz && !this.statementQuiz.timed) {
       this.correctAnswers = await RemoteServices.concludeQuiz(
         this.statementQuiz
       );
+    } else if (this.statementQuiz && this.statementQuiz.timed) {
+      await RemoteServices.concludeTimedQuiz(this.statementQuiz);
     } else {
       throw Error('No quiz');
     }
