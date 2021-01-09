@@ -1,22 +1,44 @@
 # Software Architecture Project Report
 
-## Performance during the process of answering a quiz
+In this report we analyse and address the qualities associated with the functionalities of answering a quiz in the Quizzes Tutor system.
 
-### Architecture
+## Table of Contents
+1. [Performance](#1-performance)
+    1.1 [Architecture](#11-architecture)
+    1.2 [Scenarios](#12-scenarios)
+    1.3 [Tests](#13-tests)
+        &nbsp;&nbsp;&nbsp;&nbsp;1.3.1 [Get quiz with code](#131-get-quiz-with-codebackendjmeteranswerget-quizzesjmx)
+        &nbsp;&nbsp;&nbsp;&nbsp;1.3.2 [Quiz answering with code](#132-quiz-answering-with-codebackendjmeteranswerquiz-answer-with-codejmx)
+2. [Scalability](#scalability)
+    2.1 [Architecture](#21-architecture)
+    2.2 [Scenarios](#22-scenarios)
+    2.3 [Tests](#23-tests)
+3. [Availability](#availability)
+    3.1 [Architecture](#31-architecture)
+    3.2 [Scenarios](#32-scenarios)
+    3.3 [Tests](#33-tests)
+4. [Security](#security)
+    4.1 [Architecture](#41-architecture)
+    4.2 [Scenarios](#42-scenarios)
+    4.3 [Tests](#43-tests)
+
+## 1. Performance
+
+### 1.1 Architecture
 
 ![Performance Architecture](report-resources/performance-architecture.png)
+This architecture represents the current architecture of Quizzes Tutor, since as we will see bellow in the test results, there was no need to make in changes to comply with the established scenarios. 
 
+### 1.2 Scenarios
 
-### Scenarios
+**1)** After the login and within a period of 10s, 600 student users make a request stochastically by inserting a code to get access to the quiz. The Quizzes Tutor, in normal operation, sends the quiz's questions to each user in less than 30 milliseconds.
 
-**1)** After the login and within a period of 10s, 600 student users make a request stochasticly by inserting a code to get access to the quiz. The Quizzes Tutor, in normal operation, sends the quiz's questions to each user in less than 30 miliseconds.
-
-**2)** After accessing the quiz, 600 students wait until the end of the timer to start the quiz. All the students answer to the questions following a normal distribution and in the end conclude the quiz. The Quizzes Tutor receives the answers and the final submissions and saves, for each student, this information in a database in less than 15 miliseconds.
+**2)** After accessing the quiz, 600 students wait until the end of the timer to start the quiz. All the students answer to the questions following a normal distribution and in the end conclude the quiz. The Quizzes Tutor receives the answers and the final submissions and saves, for each student, this information in a database in less than 15 milliseconds.
   
 
-### Tests
+### 1.3 Tests
 
-#### [Get quiz with code](backend/jmeter/answer/get-quizzes.jmx)
+#### 1.3.1 [Get quiz with code](backend/jmeter/answer/get-quizzes.jmx)
 
 * The teacher logs in, creates the questions and makes the quiz
 * 1000 students log in
@@ -50,7 +72,7 @@ This second test tried to simulate a limit scenario where all the students inser
 **Conclusions:** This time we can see that the average time it takes to get a quiz is proportional to the number of students. We did not address this slight performance issue, since in a real scenario the students enter the quiz code with a couple of minutes in advance, if it were any faster than it is now, it would not make any difference because they would not notice that. As we can see above, even if all the students enter at the same time, for 1000 it would take in average 2.4s to get a quiz, but since they enter at least one minute or more before the start of the quiz, it is not an issue. 
 
 
-#### [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx)
+#### 1.3.2 [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx)
 
 * The teacher logs in, creates the questions and makes the quiz
 * 1000 students log in
@@ -90,7 +112,7 @@ In this test, we tried to simulate an unrealistic scenario where all the student
 In the chart above we can observe that the performance almost follows a linear distribution, even for a high number of simultaneous users.
 
 
-## Scalability
+## 2. Scalability
 
 Analysing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Initially we tried a monolithic approach, where each thread had a table to store the answers, but this approach only scaled vertically, and if it were horizontally scaled would make increasing the performance easier, the solution was microservices, since we only needed to boot more instances of a microservice and add more hardware to easily increase performance without much effort. Therefore, we made the following changes:
 * Created a microservice to handle the submission of answers, with its own database to store the submissions.
@@ -98,14 +120,16 @@ Analysing the test for performance, we detected a bottleneck in the access to th
 
 The backend now in order to get information about the answers has to communicate with the microservice that has that information to get it, has we can see in the architecture developed below.
 
-### Architecture
+### 2.1 Architecture
 
 ![Scalability Architecture](report-resources/scalability-architecture.png)
 
-### Scenarios
+As showed above we can use multiple copies of computation tactic with micro services to address the performance issue when we have a lot of simultaneous users, the results obtain, as we will see, surpassed our expectation, since with only on instance of each micro service the performance was increased by 15% with 2000 students.
+
+### 2.2 Scenarios
 With an increment of <x> students answering a quiz, the Quizzes Tutor preserves the almost the same performance with a latency of <y> with the cost of using more servers.
 
-### Tests
+### 2.3 Tests
 
 To test scalability we used the [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx) test from perfomance, just adapting it to call the correct microservices.
 In this tests we just use one instance of each microservice.
@@ -145,18 +169,18 @@ The second test was the one that tried to simulate an unrealistic scenario where
 From the chart we can conclude that even with only one instance of each microservice, the performance was improved and with more instances and hardware it can be further improved.
 
 
-## Availability
+## 3. Availability
 
 The major issue found was if someone exited the quiz, for example if the browser crashed, there was no way to reenter it.
 
-### Architecture
+### 3.1 Architecture
 
 ![Availability Architecture](report-resources/availability-architecture.png)
 
-### Scenarios
+### 3.2 Scenarios
 A student initiates a quiz and answers to <x> questions and closes the browser.  The Quizzes Tutor preserves the answers and the student can still answer the rest of the quiz if it is on its time. When the student returns to the quiz, the Quizzes Tutor gets the quiz with the answers already done with <x> milliseconds.
   
-### Tests
+### 3.3 Tests
 In these tests, 10% of the students exit the quiz, and return to it.
 
 Same as first performance test for 1000 students with thinking time
@@ -171,19 +195,19 @@ Same as second performance test with every student answering at the same time
 * 1000 students
 ![1000 Students at the same time](report-resources/)
 
-## Security
+## 4. Security
 
-### Architecture
+### 4.1 Architecture
 
 ![Availability Architecture](report-resources/security-architecture.png)
 
-### Scenarios
+### 4.2 Scenarios
 **1)** A student submits a quiz once. Then he tries to submit again via other means, like Postman, since in the frontend we can only submit once. The second submission is rejected because he submit already once.
 **2)** A student gets the questions from other student or other means and tries to submit them out of order, the submission is rejected.
 **3)** A student tries to get the quizzes question through monitoring the HTTP requests in the network, he finds the correct request, but he cannot read it, because it is encrypted.
 **4)** A student submitted a question by clicking the arrow next in the user interface, but he realized that he made a mistake and tries to submit it through an HTTP request. It fails, because quiz tutor known that he already submitted that question as a his final answers.
   
-### Tests
+### 4.3 Tests
 In these tests, 10% of the students exit the quiz, and return to it.
 
 Same as first performance test for 1000 students with thinking time
