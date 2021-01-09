@@ -33,7 +33,7 @@ In this report we analyse and address the qualities associated with the function
 ### 1.2 Architecture
 
 ![Performance Architecture](report-resources/performance-architecture.png)
-This architecture represents the current architecture of Quizzes Tutor, since as we will see bellow in the test results, there was no need to make in changes to comply with the established scenarios. 
+This architecture represents the current architecture of Quizzes Tutor, since as we will see bellow in the test results, there was no need to make any changes to comply with the established scenarios. 
   
 ### 1.3 Tests
 
@@ -113,20 +113,20 @@ In the chart above we can observe that the performance almost follows a linear d
 
 ## 2. Scalability
 
-Analyzing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Initially we tried a monolithic approach, where each thread had a table to store the answers, but this approach only scaled vertically, and if it were horizontally scaled would make increasing the performance easier, the solution was micro services, since we only needed to boot more instances of a micro service and add more hardware to easily increase performance without much effort. Therefore, we made the following changes:
+Analysing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Initially we tried a monolithic approach, where each thread had a table to store the answers, but this approach only scaled vertically, and if it were horizontally scaled would make increasing the performance easier, the solution was micro services, since we only needed to boot more instances of a micro service and add more hardware to easily increase performance without much effort. Therefore, we made the following changes:
 * Created a micro service to handle the submission of answers, with its own database to store the submissions.
 * Created a micro service to handle the submission of final quizzes' answers, with its own database to store the answers.
 
 The backend now in order to get information about the answers has to communicate with the micro service that has that information to get it, has we can see in the architecture developed below.
 
 ### 2.1 Scenarios
-With an increment of 1000 students answering a quiz, the Quizzes Tutor preserves the almost the same performance with a latency of 200 milliseconds with the cost of using more servers.
+With an increment of 1000 students answering a quiz, the Quizzes Tutor preserves almost the same performance with a latency of 200 milliseconds with the cost of using more servers.
 
 ### 2.2 Architecture
 
 ![Scalability Architecture](report-resources/scalability-architecture.png)
 
-As showed above we can use **multiple copies of computation** tactic with micro services to address the performance issue when we have a lot of simultaneous users, the results obtain, as we will see, surpassed our expectation, since with only on instance of each micro service the performance was increased by 15% with 2500 students.
+As showed above we can use the **Multiple Copies of Computation** tactic with micro services to address the performance issue when we have a lot of simultaneous users, the results obtained, as we will see, surpassed our expectations, since with only one instance of each micro service the performance was increased by 15% with 2500 students.
 
 ### 2.3 Tests
 
@@ -182,7 +182,7 @@ A student initiates a quiz and answers to any number of questions (excluding the
 
 ![Availability Architecture](report-resources/availability-architecture.png)
 
-To address this situation each time a user goes to the next question, we save it in the *Submit Answer* micro service as a "*final answer*", in other words, as the final answer of the student to a give question, so if it exits the quiz because he misclicked or his browser crashed, if he tries to reenter the quiz, from his final answers we can reconstruct where he left on the quiz, leaving him exactly where he left. To achieve this the **rollback** tactic was used.
+To address this situation each time a user goes to the next question, we save it in the *Submit Answer* micro service as a "*final answer*", in other words, as the final answer of the student to a given question, so if he exits the quiz because he misclicked or his browser crashed, if he tries to reenter the quiz, from his final answers we can reconstruct where he left on the quiz, leaving him exactly where he left. To achieve this the **Rollback** tactic was used.
   
 ### 3.3 Tests
 In these tests, 10% of the students exit the quiz, and return to it.
@@ -202,26 +202,26 @@ Same as second performance test with every student answering at the same time
 ## 4. Security
 
 ### 4.1 Scenarios
-**1)** A student attempts  to submit two times the answers to the same quiz. A student submits a quiz once. Then he tries to submit again via other means, like Postman, since in the frontend we can only submit once. The second submission is rejected because he submitted already once.
+**1)** A student attempts  to submit two times the answers to the same quiz. A student submits a quiz once. Then he tries to submit again via other means, like Postman, since in the frontend we can only submit once. The second submission is rejected because he already submitted once.
 
 **2)** A student gets the questions from other student or other means and tries to submit them out of order, the submission is rejected.
 
 **3)** A student attempts to get the quizzes question through monitoring the HTTP requests in the network, he finds the correct request, but he cannot read it, because that data is encrypted.
 
-**4)** A student attempts to answer again a question. The student submitted a question by clicking the arrow next in the user interface, but he realized that he made a mistake and tries to submit it through an HTTP request. It fails, because quiz tutor known that he already submitted that question as a his final answers.
+**4)** A student attempts to answer a question again. The student submitted a question by clicking the arrow next in the user interface, but he realized that he made a mistake and tries to submit it through an HTTP request. It fails, because quiz tutor knows that he already submitted that question as his final answer.
 
 ### 4.2 Architecture
 
 ![Availability Architecture](report-resources/security-architecture.png)
 
 We did the following to achieve the scenarios above:
-**1)** To solve this scenario we added a column in the table used to save each quiz submission (*quiz_answer_item*) to save the username of the student, then we someone tries to submit a quiz, we verify if there is already a submission for that quiz ID and for that user, if there is, it is declined. To do this the **limit access** tactic was used.
+**1)** To solve this scenario we added a column in the table used to save each quiz submission (*quiz_answer_item*) to save the username of the student, then if someone tries to submit a quiz, we verify if there is already a submission for that quiz ID and for that user, if there is, it is declined. To do this the **limit access** tactic was used.
 
-**2)** For this, when the quiz starts, the frontend sends to the *Conclude Quiz* micro service the quiz with the order of the questions, so when we try to conclude a quiz, the order of the questions is checked before accepting the submission. To comply with the scenario, the **limit access** tactic was used.
+**2)** For this, when the quiz starts, the frontend sends to the *Conclude Quiz* micro service the quiz with the order of the questions, so when we try to conclude a quiz, the order of the questions is checked before accepting the submission. To comply with the scenario, the **Limit Access** tactic was used.
 
-**3)** This was a major vulnerability, where anyone could see all the questions in the quiz, merely by monitoring the requests in the browser, to fix this issue we encrypt the data in the backend and send it to the frontend, where it decrypts it. To achieve this the **encrypt data** tactic was used.
+**3)** This was a major vulnerability, where anyone could see all the questions in the quiz, merely by monitoring the requests in the browser, to fix this issue we encrypt the data in the backend and send it to the frontend, where it decrypts it. To achieve this the **Encrypt Data** tactic was used.
 
-**4)** We used a similar approach to the second scenario, where we check if the user already submitted a final answer to a given question, if so, it is rejected. To do this the **limit access** tactic was used.
+**4)** We used a similar approach to the second scenario, where we check if the user already submitted a final answer to a given question, if so, it is rejected. To do this the **Limit Access** tactic was used.
   
 ### 4.3 Tests
 In these tests, 10% of the students exit the quiz, and return to it.
