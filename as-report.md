@@ -13,14 +13,21 @@ In this report we analyse and address the qualities associated with the function
     1. [Scenarios](#21-scenarios)
     2. [Architecture](#22-architecture)
     3. [Tests](#23-tests)
+        1. [Real scenario test](#231)
+        2. [All students at the same time](#232)
 3. [Availability](#3-availability)
     1. [Scenarios](#31-scenarios)
     2. [Architecture](#32-architecture)
     3. [Tests](#33-tests)
+        1. [Real scenario test](#331)
+        2. [All students at the same time](#332)
 4. [Security](#4-security)
     1. [Scenarios](#41-scenarios)
     2. [Architecture](#42-architecture)
     3. [Tests](#43-tests)
+        1. [Scenario Tests](#431)
+        2. [Real scenario test](#432)
+        3. [All students at the same time](#433)
 
 ## 1. Performance
 
@@ -33,11 +40,11 @@ In this report we analyse and address the qualities associated with the function
 ### 1.2 Architecture
 
 ![Performance Architecture](report-resources/performance-architecture.png)
-This architecture represents the current architecture of Quizzes Tutor, since as we will see bellow in the test results, there was no need to make any changes to comply with the established scenarios. 
+This architecture represents the current architecture of Quizzes Tutor, since as we will see below in the test results, there was no need to make any changes to comply with the established scenarios. 
   
 ### 1.3 Tests
 
-#### <a id="131"></a> 1.3.1 [Get quiz with code](backend/jmeter/answer/get-quizzes.jmx)
+#### <a id="131"></a> 1.3.1 Get quiz with code
 
 * The teacher logs in, creates the questions and makes the quiz
 * 1000 students log in
@@ -46,7 +53,7 @@ This architecture represents the current architecture of Quizzes Tutor, since as
 
 **Results:**
 
-This first test tried to simulate a real scenario where multiple students insert the code for the quiz at a random time between 1s and 10s. (Bigger intervals where tested and they gave similar results)
+This [first test](backend/jmeter/answer/get-quizzes-rt.jmx) tried to simulate a real scenario where multiple students insert the code for the quiz at a random time between 1s and 10s. (Bigger intervals where tested and they gave similar results)
 
 * 300 students
 ![300 Students at a random time 1s-10s](report-resources/performance-getquiz-300_rt.png)
@@ -58,7 +65,7 @@ This first test tried to simulate a real scenario where multiple students insert
 **Conclusions:** With these tests we can conclude that at least until 1000 students, the average time taken to get the quiz is independent of the number of students.
 
 
-This second test tried to simulate a limit scenario where all the students insert the code at the same time (This test uses a synchronizing timer to make sure that all threads are created before the get quiz sample starts)
+This [second test](backend/jmeter/answer/get-quizzes-st.jmx) tried to simulate a limit scenario where all the students insert the code at the same time (This test uses a synchronizing timer to make sure that all threads are created before the get quiz sample starts)
 
 * 300 students
 ![300 Students at the same time](report-resources/performance-getquiz-300_st.png)
@@ -71,7 +78,7 @@ This second test tried to simulate a limit scenario where all the students inser
 **Conclusions:** This time we can see that the average time it takes to get a quiz is proportional to the number of students. We did not address this slight performance issue, since in a real scenario the students enter the quiz code with a couple of minutes in advance, if it were any faster than it is now, it would not make any difference because they would not notice that. As we can see above, even if all the students enter at the same time, for 1000 it would take in average 2.4s to get a quiz, but since they enter at least one minute or more before the start of the quiz, it is not an issue. 
 
 
-#### <a id="132"></a> 1.3.2 [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx)
+#### <a id="132"></a> 1.3.2 Quiz answering with code
 
 * The teacher logs in, creates the questions and makes the quiz
 * 1000 students log in
@@ -83,7 +90,7 @@ This second test tried to simulate a limit scenario where all the students inser
 
 **Results:**
 
-This test corresponds to the scenario 2.
+This [test](backend/jmeter/answer/quiz-answer-with-code-rt.jmx) corresponds to the scenario 2.
 
 * 300 students
 ![300 Students at a random time 1s-10s](report-resources/performance-answerquiz-300_normt.png)
@@ -95,7 +102,7 @@ This test corresponds to the scenario 2.
 **Conclusions:** With this test we can see that the process of answering a quiz is independent of the number of students (at least until 1000 students) and it's faster than getting a quiz.
 
 
-In this test, we tried to simulate an unrealistic scenario where all the students get the quiz and answer the questions at the same time, without having time to "think". We pretended to stress test the system to see how it would cope.
+In this [test](backend/jmeter/answer/quiz-answer-with-code-st.jmx), we tried to simulate an unrealistic scenario where all the students get the quiz and answer the questions at the same time, without having time to "think". We pretended to stress test the system to see how it would cope.
 
 * 300 students
 ![300 Students at the same time](report-resources/performance-answerquiz-300_st.png)
@@ -120,23 +127,20 @@ Analyzing the test for performance, we detected a bottleneck in the access to th
 The backend now in order to get information about the answers has to communicate with the microservice that has that information to get it, has we can see in the architecture developed below.
 
 ### 2.1 Scenarios
-With an increment of 1000 students answering a quiz, the Quizzes Tutor preserves almost the same performance with a latency of 200 milliseconds with the cost of using more servers.
+With an increment of 1000 students answering a quiz, the Quizzes Tutor preserves almost the same performance with the cost of using more servers, consequently more hardware and money.
 
 ### 2.2 Architecture
 
 ![Scalability Architecture](report-resources/scalability-architecture.png)
 
-As showed above we can use the **Multiple Copies of Computation** tactic with micro services to address the performance issue when we have a lot of simultaneous users, the results obtained, as we will see, surpassed our expectations, since with only one instance of each micro service the performance was increased by 15% with 2500 students.
+As showed above we can use the **Multiple Copies of Computation** tactic with microservices to address the performance issue when we have a lot of simultaneous users, the results obtained, as we will see, surpassed our expectations, since with only one instance of each microservice the performance was increased by 15% with 2500 students.
 
 ### 2.3 Tests
 
-To test scalability we used the [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx) test from performance, just adapting it to call the correct micro services.
+To test scalability we used the **Quiz answering with code** test from performance, just adapting it to call the correct microservices.
 In this tests we just use one instance of each microservice.
 
-Same as first performance test for 1000 students with thinking time
-![1000 Students at the same time](report-resources/scalability-2-microservices-1000-rt.png)
-
-**Results:**
+#### <a id="231"></a> 2.3.1 [Real scenario test](backend/jmeter/answer/quiz-answer-with-code-scalability-rt.jmx)
 
 This first test is the one that tried to simulate a real scenario where multiple students insert the code for the quiz at a random time between 1s and 10s. 
 
@@ -151,6 +155,7 @@ This first test is the one that tried to simulate a real scenario where multiple
 
 **Conclusions:** We can see that with the microservices architecture even for a normal scenario response times are faster.
 
+#### <a id="232"></a> 2.3.2 [All students at the same time](backend/jmeter/answer/quiz-answer-with-code-scalability-st.jmx)
 
 The second test was the one that tried to simulate an unrealistic scenario where all the students get the quiz and answer the questions at the same time.
 
@@ -163,7 +168,7 @@ The second test was the one that tried to simulate an unrealistic scenario where
 * 2000 students
 ![2000 Students at the same time](report-resources/scalability-2-microservices-2000-st.png)
 
-**Conclusions:** In this second test, we can conclude that the average times for submitting an answer didn't change and the times for concluding a quiz increased a bit for a low number of users. For a lot of simultaneous users (1000+), times started to decrease. Looking at the architecture view above we find that since each request is processed independently, we have the guarantee that it scales with the hardware, so deploying more instances of the microservices would decrease the average times. 
+**Conclusions:** In this second test, we can conclude that the average times for submitting an answer didn't change and the times for concluding a quiz increased a bit, but overall the average total time decreased specially for a high number of simultaneous users. Looking at the architecture view above we find that since each request is processed independently, we have the guarantee that it scales with the hardware, so deploying more instances of the microservices would decrease the average times. 
 
 
 ![Performance chart](report-resources/scalability_chart.png)
@@ -172,8 +177,6 @@ From the chart we can conclude that even with only one instance of each microser
 
 
 ## 3. Availability
-
-The major issue found was if someone exited the quiz, for example if the browser crashed, there was no way to reenter it.
 
 ### 3.1 Scenarios
 A student initiates a quiz and answers to any number of questions (excluding the last one) and closes the browser.  The Quizzes Tutor preserves the answers and the student can still answer the rest of the quiz if it is on time. When the student returns to the quiz, the Quizzes Tutor gets the quiz with the answers already done with 200 milliseconds.
@@ -187,7 +190,7 @@ To address this situation each time a user goes to the next question, we save it
 ### 3.3 Tests
 In these tests we adapted the previous ones, such that 10% of the students get the quiz by qr code, answer to 2 questions and then "exit the quiz", after that they get the quiz by qr code again, and finally they answer to the last 3 questions.
 
-**Real scenario test:**
+#### <a id="331"></a> 3.3.1 [Real scenario test](backend/jmeter/answer/quiz-answer-with-code-availability-rt.jmx)
 * 300 students
 ![300 Students at the same time](report-resources/availability-300-rt.png)
 * 600 students
@@ -196,7 +199,7 @@ In these tests we adapted the previous ones, such that 10% of the students get t
 ![1000 Students at the same time](report-resources/availability-1000-rt.png)
 
 
-**All students at the same time:**
+#### <a id="332"></a> 3.3.2 [All students at the same time](backend/jmeter/answer/quiz-answer-with-code-availability-st.jmx)
 * 300 students
 ![300 Students at the same time](report-resources/availability-300-st.png)
 * 600 students
@@ -209,13 +212,16 @@ In these tests we adapted the previous ones, such that 10% of the students get t
 ## 4. Security
 
 ### 4.1 Scenarios
-**1)** A student attempts  to submit two times the answers to the same quiz. A student submits a quiz once. Then he tries to submit again via other means, like Postman, since in the frontend we can only submit once. The second submission is rejected because he already submitted once.
 
-**2)** A student gets the questions from other student or other means and tries to submit them out of order, the submission is rejected.
+Assuming the system is fully operational in all the scenarios below:
+
+**1)** A student attempts to submit two times the answers to the same quiz. He submits a quiz once and he tries to submit again via other means, like Postman, since in the frontend we can only submit once. The second submission is rejected because he submitted already once.
+
+**2)** A student attempts to know the quiz before answering it. He gets the questions from another student or by other means and tries to submit the answers with a different order, the submission is rejected.
 
 **3)** A student attempts to get the quizzes question through monitoring the HTTP requests in the network, he finds the correct request, but he cannot read it, because that data is encrypted.
 
-**4)** A student attempts to answer a question again. The student submitted a question by clicking the arrow next in the user interface, but he realized that he made a mistake and tries to submit it through an HTTP request. It fails, because quiz tutor knows that he already submitted that question as his final answer.
+**4)** A student attempts to re-answer a question. The student submitted a question by clicking the arrow next in the user interface, but he realized that he made a mistake and tries to submit it through an HTTP request. It fails, because Quizzes Tutor knows that he already submitted that question as his final answers.
 
 ### 4.2 Architecture
 
@@ -233,29 +239,36 @@ We did the following to achieve the scenarios above:
   
 ### 4.3 Tests
 
-**Scenario 1 test:**
+#### <a id="431"></a> 4.3.1 Scenario Tests
+
+Some tests fail to show the response from the server to the invalid request.
+
+**[Scenario 1 test](backend/jmeter/answer/quiz-answer-with-code-security-scenario-1.jmx)**
 
 In this test, the student tries to conclude a quiz that he previously had already concluded.
+
 ![Scenario 1 test](report-resources/security-scenario-1.png)
 
-**Scenario 2 test:**
+**[Scenario 2 test](backend/jmeter/answer/quiz-answer-with-code-security-scenario-2.jmx)**
 
 Here the student sends the answers of the questions in the concludeQuiz request in an order that is different from the one he received the questions in the getQuizByQrCode request.
+
 ![Scenario 2 test](report-resources/security-scenario-2.png)
 
 **Scenario 3 test:**
 
 ![Scenario 3 test](report-resources/security-scenario-3.png)
 
-**Scenario 4 test:**
+**[Scenario 4 test](backend/jmeter/answer/quiz-answer-with-code-security-scenario-4.jmx)**
 
 For this scenario, the student tries to submit an answer for a question that he previously had already submitted and confirmed that it was is final answer.
+
 ![Scenario 4 test](report-resources/security-scenario-4.png)
 
 
-Then we used the same tests from Performance and Scalabity to check how much our changes impacted the performance of the system.
+Then we used the same tests from Performance and Scalability to check how much our changes impacted the performance of the system.
 
-**Real scenario test:**
+#### <a id="432"></a> 4.3.2 [Real scenario test](backend/jmeter/answer/quiz-answer-with-code-security-rt.jmx)
 * 300 students
 ![300 Students at the same time](report-resources/security-300-rt.png)
 * 600 students
@@ -263,8 +276,7 @@ Then we used the same tests from Performance and Scalabity to check how much our
 * 1000 students
 ![1000 Students at the same time](report-resources/security-1000-rt.png)
 
-
-**All students at the same time:**
+#### <a id="433"></a> 4.3.3 [All students at the same time](backend/jmeter/answer/quiz-answer-with-code-security-st.jmx)
 * 300 students
 ![300 Students at the same time](report-resources/security-300-st.png)
 * 600 students
