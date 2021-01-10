@@ -34,6 +34,7 @@ public enum ErrorMessage {
     QUESTION_ANSWER_NOT_FOUND("Question answer not found with id %d"),
     QUESTION_NOT_FOUND("Question not found with id %d"),
     QUESTION_TYPE_NOT_IMPLEMENTED("Question type %s not implemented"),
+    QUESTION_ORDER_NOT_FOUND("Question order not found, quiz not started through the frontend"),
     QUIZ_ANSWER_NOT_FOUND("Quiz answer not found with id %d"),
     QUIZ_NOT_FOUND("Quiz not found with id %d"),
     QUIZ_QUESTION_NOT_FOUND("Quiz question not found with id %d"),
