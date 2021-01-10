@@ -71,7 +71,7 @@
           </elementProp>
           <elementProp name="students" elementType="Argument">
             <stringProp name="Argument.name">students</stringProp>
-            <stringProp name="Argument.value">10</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -429,7 +429,7 @@ props.put(&quot;endTime&quot;, end2);</stringProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${students}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
@@ -762,15 +762,6 @@ props.put(&apos;username_&apos; + thread.toString, vars.get(&apos;username&apos;
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Synchronizing Timer" enabled="true">
-            <intProp name="groupSize">0</intProp>
-            <longProp name="timeoutInMs">0</longProp>
-          </SyncTimer>
-          <hashTree/>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Random Timer" enabled="false">
-            <stringProp name="ConstantTimer.delay">2</stringProp>
-          </ConstantTimer>
-          <hashTree/>
           <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Get encrypted data" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">encrypted_data</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">$.data</stringProp>
@@ -870,11 +861,6 @@ vars.put(&quot;decrypted&quot;, decrypted);</stringProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </LoopController>
         <hashTree>
-          <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Synchronizing Timer" enabled="true">
-            <intProp name="groupSize">0</intProp>
-            <longProp name="timeoutInMs">0</longProp>
-          </SyncTimer>
-          <hashTree/>
           <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Questions" enabled="true">
             <boolProp name="LoopController.continue_forever">true</boolProp>
             <stringProp name="LoopController.loops">${number_of_questions}</stringProp>
@@ -889,15 +875,6 @@ vars.put(&quot;decrypted&quot;, decrypted);</stringProp>
               <boolProp name="CounterConfig.per_user">true</boolProp>
               <boolProp name="CounterConfig.reset_on_tg_iteration">true</boolProp>
             </CounterConfig>
-            <hashTree/>
-            <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="false">
-              <stringProp name="ConstantTimer.delay">${__Random(1, 1000)}</stringProp>
-            </ConstantTimer>
-            <hashTree/>
-            <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="false">
-              <stringProp name="ConstantTimer.delay">10000</stringProp>
-              <stringProp name="RandomTimer.range">5000</stringProp>
-            </GaussianRandomTimer>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Submit answer" enabled="true">
               <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -918,7 +895,6 @@ vars.put(&quot;decrypted&quot;, decrypted);</stringProp>
 	&quot;isFinal&quot;: true,&#xd;
 	&quot;username&quot;:&quot;${__P(username_${__groovy(ctx.getThreadNum())})}&quot;&#xd;
 }&#xd;
-&#xd;
 </stringProp>
                     <stringProp name="Argument.metadata">=</stringProp>
                   </elementProp>
@@ -980,35 +956,37 @@ vars.put(&quot;decrypted&quot;, decrypted);</stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
-            <stringProp name="filename"></stringProp>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
-            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
             <stringProp name="script">StringBuilder result = new StringBuilder();
 String newline = System.getProperty(&quot;line.separator&quot;);
 int numberOfQuestions = Integer.parseInt(vars.get(&quot;number_of_questions&quot;));
+int[] order = [1,3,2,5,4];
 
-for (int i = 1; i &lt;= numberOfQuestions; i++) {
+for (int i = 0; i &lt; numberOfQuestions; i++) {
 	result.append(&quot;{&quot;);
 	result.append(&quot;\&quot;optionId\&quot;: &quot;);
-	result.append(vars.get(&quot;option_id_&quot;+i));
+	result.append(vars.get(&quot;option_id_&quot; + order[i]));
 	result.append(&quot;,  \&quot;timeTaken\&quot;: &quot;);
-	result.append(i);
+	result.append(order[i]);
 	result.append(&quot;,  \&quot;quizQuestionId\&quot;: &quot;);
-	result.append(vars.get(&quot;quiz_question_id_&quot;+i));
+	result.append(vars.get(&quot;quiz_question_id_&quot; + order[i]));
 	result.append(&quot;,  \&quot;sequence\&quot;: &quot;);
-	result.append(i);
+	result.append(order[i]);
 	result.append(&quot;,  \&quot;questionAnswerId\&quot;: &quot;);
-	result.append(vars.get(&quot;question_answer_id_&quot;+i));
+	result.append(vars.get(&quot;question_answer_id_&quot; + order[i]));
 	result.append(&quot;}&quot;);	
-	if (i != numberOfQuestions) {
+	if (i != numberOfQuestions - 1) {
 		result.append(&quot;,&quot;);
     		result.append(newline);
 	}
 }
 
 vars.put(&quot;answers&quot;, result.toString());</stringProp>
-          </BeanShellPreProcessor>
+          </JSR223PreProcessor>
           <hashTree/>
         </hashTree>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">

@@ -71,7 +71,7 @@
           </elementProp>
           <elementProp name="students" elementType="Argument">
             <stringProp name="Argument.name">students</stringProp>
-            <stringProp name="Argument.value">10</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -429,7 +429,7 @@ props.put(&quot;endTime&quot;, end2);</stringProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${students}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
@@ -762,15 +762,6 @@ props.put(&apos;username_&apos; + thread.toString, vars.get(&apos;username&apos;
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Synchronizing Timer" enabled="true">
-            <intProp name="groupSize">0</intProp>
-            <longProp name="timeoutInMs">0</longProp>
-          </SyncTimer>
-          <hashTree/>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Random Timer" enabled="false">
-            <stringProp name="ConstantTimer.delay">2</stringProp>
-          </ConstantTimer>
-          <hashTree/>
           <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Get encrypted data" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">encrypted_data</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">$.data</stringProp>
@@ -870,11 +861,6 @@ vars.put(&quot;decrypted&quot;, decrypted);</stringProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </LoopController>
         <hashTree>
-          <SyncTimer guiclass="TestBeanGUI" testclass="SyncTimer" testname="Synchronizing Timer" enabled="true">
-            <intProp name="groupSize">0</intProp>
-            <longProp name="timeoutInMs">0</longProp>
-          </SyncTimer>
-          <hashTree/>
           <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Questions" enabled="true">
             <boolProp name="LoopController.continue_forever">true</boolProp>
             <stringProp name="LoopController.loops">${number_of_questions}</stringProp>
@@ -889,15 +875,6 @@ vars.put(&quot;decrypted&quot;, decrypted);</stringProp>
               <boolProp name="CounterConfig.per_user">true</boolProp>
               <boolProp name="CounterConfig.reset_on_tg_iteration">true</boolProp>
             </CounterConfig>
-            <hashTree/>
-            <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="false">
-              <stringProp name="ConstantTimer.delay">${__Random(1, 1000)}</stringProp>
-            </ConstantTimer>
-            <hashTree/>
-            <GaussianRandomTimer guiclass="GaussianRandomTimerGui" testclass="GaussianRandomTimer" testname="Gaussian Random Timer" enabled="false">
-              <stringProp name="ConstantTimer.delay">10000</stringProp>
-              <stringProp name="RandomTimer.range">5000</stringProp>
-            </GaussianRandomTimer>
             <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Submit answer" enabled="true">
               <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -916,7 +893,7 @@ vars.put(&quot;decrypted&quot;, decrypted);</stringProp>
 	&quot;sequence&quot;:${counter_value},&#xd;
 	&quot;timeToSubmission&quot;: 12345,&#xd;
 	&quot;isFinal&quot;: true,&#xd;
-	&quot;username&quot;:&quot;${__P(username_${__groovy(ctx.getThreadNum())})}&quot;&#xd;
+	&quot;username&quot;:&quot;${__P(username_${__threadNum})}&quot;&#xd;
 }&#xd;
 &#xd;
 </stringProp>
@@ -941,6 +918,46 @@ vars.put(&quot;decrypted&quot;, decrypted);</stringProp>
             <hashTree/>
           </hashTree>
         </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Submit answer" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;answerDetails&quot;: {&#xd;
+		&quot;optionId&quot;:${__V(option_id_5)},&#xd;
+		&quot;type&quot;: &quot;multiple_choice&quot;&#xd;
+	},&#xd;
+	&quot;timeTaken&quot;:1278,&#xd;
+	&quot;questionAnswerId&quot;:${__V(question_answer_id_5)},&#xd;
+	&quot;quizQuestionId&quot;:${__V(quiz_question_id_5)},&#xd;
+	&quot;sequence&quot;:5,&#xd;
+	&quot;timeToSubmission&quot;: 12345,&#xd;
+	&quot;isFinal&quot;: true,&#xd;
+	&quot;username&quot;:&quot;${__P(username_${__threadNum})}&quot;&#xd;
+}&#xd;
+&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${server}</stringProp>
+          <stringProp name="HTTPSampler.port">${port-submitAnswer}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${protocol}</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
+          <stringProp name="HTTPSampler.path">${prefix}/quizzes/${__property(quiz_id)}/submit</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Conclude quiz" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">

@@ -193,8 +193,12 @@ public class AnswerService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void completeFinishedAnswers() {
-        quizAnswerRepository.findQuizAnswersNotCompleted().stream()
-                .filter(answer -> answer.getQuiz().getConclusionDate().isBefore(DateHandler.now()))
-                .forEach(QuizAnswer::complete);
+        Set<QuizAnswer> quizAnswersNotCompleted = quizAnswerRepository.findQuizAnswersNotCompleted();
+
+        if (!quizAnswersNotCompleted.isEmpty()) {
+            quizAnswersNotCompleted.stream()
+                    .filter(answer -> answer.getQuiz().getConclusionDate().isBefore(DateHandler.now()))
+                    .forEach(QuizAnswer::complete);
+        }
     }
 }
