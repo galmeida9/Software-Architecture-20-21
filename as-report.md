@@ -241,6 +241,9 @@ Scenario 2 test:
 Here the student sends the answers of the questions in the concludeQuiz request in an order that is different from the one he received the questions in the getQuizByQrCode request.
 ![Scenario 2 test](report-resources/security-scenario-2.png)
 
+Scenario 3 test:
+![Scenario 3 test](report-resources/security-scenario-3.png)
+
 Scenario 4 test:
 For this scenario, the student tries to submit an answer for a question that he previously had already submitted and confirmed that it was is final answer.
 ![Scenario 4 test](report-resources/security-scenario-4.png)
