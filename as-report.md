@@ -113,11 +113,11 @@ In the chart above we can observe that the performance almost follows a linear d
 
 ## 2. Scalability
 
-Analyzing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Initially we tried a monolithic approach, where each thread had a table to store the answers, but this approach only scaled vertically, and if it were horizontally scaled would make increasing the performance easier, the solution was micro services, since we only needed to boot more instances of a micro service and add more hardware to easily increase performance without much effort. Therefore, we made the following changes:
-* Created a micro service to handle the submission of answers, with its own database to store the submissions.
-* Created a micro service to handle the submission quizzes' submissions, with its own database to store the submissions.
+Analyzing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Initially we tried a monolithic approach, where each thread had a table to store the answers, but this approach only scaled vertically, and if it were horizontally scaled would make increasing the performance easier, the solution was microservices, since we only needed to boot more instances of a microservice and add more hardware to easily increase performance without much effort. Therefore, we made the following changes:
+* Created a microservice to handle the submission of answers, with its own database to store the submissions.
+* Created a microservice to handle the submission quizzes' submissions, with its own database to store the submissions.
 
-The backend now in order to get information about the answers has to communicate with the micro service that has that information to get it, has we can see in the architecture developed below.
+The backend now in order to get information about the answers has to communicate with the microservice that has that information to get it, has we can see in the architecture developed below.
 
 ### 2.1 Scenarios
 With an increment of 1000 students answering a quiz, the Quizzes Tutor preserves almost the same performance with a latency of 200 milliseconds with the cost of using more servers.
@@ -131,7 +131,7 @@ As showed above we can use the **Multiple Copies of Computation** tactic with mi
 ### 2.3 Tests
 
 To test scalability we used the [Quiz answering with code](backend/jmeter/answer/quiz-answer-with-code.jmx) test from performance, just adapting it to call the correct micro services.
-In this tests we just use one instance of each micro service.
+In this tests we just use one instance of each microservice.
 
 Same as first performance test for 1000 students with thinking time
 ![1000 Students at the same time](report-resources/scalability-2-microservices-1000-rt.png)
@@ -149,7 +149,7 @@ This first test is the one that tried to simulate a real scenario where multiple
 * 2000 students
 ![2000 Students at a random time 1s-10s](report-resources/scalability-2-microservices-2000-rt.png)
 
-**Conclusions:** We can see that with the micro services architecture even for a normal scenario response times are faster.
+**Conclusions:** We can see that with the microservices architecture even for a normal scenario response times are faster.
 
 
 The second test was the one that tried to simulate an unrealistic scenario where all the students get the quiz and answer the questions at the same time.
@@ -168,7 +168,7 @@ The second test was the one that tried to simulate an unrealistic scenario where
 
 ![Performance chart](report-resources/scalability_chart.png)
 
-From the chart we can conclude that even with only one instance of each micro service, the performance was improved and with more instances and hardware it can be further improved.
+From the chart we can conclude that even with only one instance of each microservice, the performance was improved and with more instances and hardware it can be further improved.
 
 
 ## 3. Availability
@@ -182,7 +182,7 @@ A student initiates a quiz and answers to any number of questions (excluding the
 
 ![Availability Architecture](report-resources/availability-architecture.png)
 
-To address this situation each time a user goes to the next question, we save it in the *Submit Answer* micro service as a "*final answer*", in other words, as the final answer of the student to a given question, so if he exits the quiz because he misclicked or his browser crashed, if he tries to reenter the quiz, from his final answers we can reconstruct where he left on the quiz, leaving him exactly where he left. To achieve this the **Rollback** tactic was used.
+To address this situation each time a user goes to the next question, we save it in the *Submit Answer* microservice as a "*final answer*", in other words, as the final answer of the student to a given question, so if he exits the quiz because he misclicked or his browser crashed, if he tries to reenter the quiz, from his final answers we can reconstruct where he left on the quiz, leaving him exactly where he left. To achieve this the **Rollback** tactic was used.
   
 ### 3.3 Tests
 In these tests we adapted the previous ones, such that 10% of the students get the quiz by qr code, answer to 2 questions and then "exit the quiz", after that they get the quiz by qr code again, and finally they answer to the last 3 questions.
@@ -204,7 +204,7 @@ All students at the same time:
 * 1000 students
 ![1000 Students at the same time](report-resources/availability-1000-st.png)
 
-**Conclusions:** 
+**Conclusions:** In this second test, we think that the average times of the concludeQuiz are smaller than in the previous quality because since 10% of the students have to get the quiz again, they will finish later so there are less students concluding the quiz at the same time. Besides that, the results stay similar to the ones we obtained in scalability, so the changes we have made to improve availability didn't have an impact on performance.
 
 ## 4. Security
 
@@ -225,14 +225,28 @@ We did the following to achieve the scenarios above:
 
 **1)** To solve this scenario we added a column in the table used to save each quiz submission (*quiz_answer_item*) to save the username of the student, then if someone tries to submit a quiz, we verify if there is already a submission for that quiz ID and for that user, if there is, it is declined. To do this the **limit access** tactic was used.
 
-**2)** For this, when the quiz starts, the frontend sends to the *Conclude Quiz* micro service the quiz with the order of the questions, so when we try to conclude a quiz, the order of the questions is checked before accepting the submission. To comply with the scenario, the **Limit Access** tactic was used.
+**2)** For this, when the quiz starts, the frontend sends to the *Conclude Quiz* microservice the quiz with the order of the questions, so when we try to conclude a quiz, the order of the questions is checked before accepting the submission. To comply with the scenario, the **Limit Access** tactic was used.
 
 **3)** This was a major vulnerability, where anyone could see all the questions in the quiz, merely by monitoring the requests in the browser, to fix this issue we encrypt the data in the backend and send it to the frontend, where it decrypts it. To achieve this the **Encrypt Data** tactic was used.
 
 **4)** We used a similar approach to the second scenario, where we check if the user already submitted a final answer to a given question, if so, it is rejected. To do this the **Limit Access** tactic was used.
   
 ### 4.3 Tests
-First we used the same tests from Performance and Scalabity to check how much our changes impacted the performance of the system.
+
+Scenario 1 test:
+In this test, the student tries to conclude a quiz that he previously had already concluded.
+![Scenario 1 test](report-resources/security-scenario-1.png)
+
+Scenario 2 test:
+Here the student sends the answers of the questions in the concludeQuiz request in an order that is different from the one he received the questions in the getQuizByQrCode request.
+![Scenario 2 test](report-resources/security-scenario-2.png)
+
+Scenario 4 test:
+For this scenario, the student tries to submit an answer for a question that he previously had already submitted and confirmed that it was is final answer.
+![Scenario 4 test](report-resources/security-scenario-4.png)
+
+
+Then we used the same tests from Performance and Scalabity to check how much our changes impacted the performance of the system.
 
 Real scenario test:
 * 300 students
@@ -251,4 +265,4 @@ All students at the same time:
 * 1000 students
 ![1000 Students at the same time](report-resources/security-1000-st.png)
 
-**Conclusions:** 
+**Conclusions:** With this tests we can conclude that our changes to improve security only had impact on the submitAnswer request average time that has doubled it's time in the regular scenario but stayed the same for the stress test scenario.
