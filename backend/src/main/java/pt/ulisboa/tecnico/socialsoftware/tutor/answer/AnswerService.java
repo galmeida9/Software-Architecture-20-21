@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer;
 
+import org.h2.store.DataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -81,7 +82,16 @@ public class AnswerService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<CorrectAnswerDto> concludeQuiz(StatementQuizDto statementQuizDto) {
-        QuizAnswer quizAnswer = checkQuiz(statementQuizDto.getQuizAnswerId());
+        QuizAnswer quizAnswer = quizAnswerRepository.findById(statementQuizDto.getQuizAnswerId())
+                .orElseThrow(() -> new TutorException(QUIZ_ANSWER_NOT_FOUND, statementQuizDto.getQuizAnswerId()));
+
+        if (quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(DateHandler.now())) {
+            throw new TutorException(QUIZ_NOT_YET_AVAILABLE);
+        }
+
+        if (quizAnswer.getQuiz().getConclusionDate() != null && quizAnswer.getQuiz().getConclusionDate().isBefore(DateHandler.now().minusMinutes(10))) {
+            throw new TutorException(QUIZ_NO_LONGER_AVAILABLE);
+        }
 
         if (!quizAnswer.isCompleted()) {
             quizAnswer.setCompleted(true);
@@ -98,34 +108,6 @@ public class AnswerService {
         return new ArrayList<>();
     }
 
-    @Retryable(
-            value = {SQLException.class},
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void concludeTimedQuiz(int quizAnswerId) {
-        QuizAnswer quizAnswer = quizAnswerRepository.findById(quizAnswerId)
-                .orElseThrow(() -> new TutorException(QUIZ_ANSWER_NOT_FOUND, quizAnswerId));
-        //QuizAnswer quizAnswer = checkQuiz(quizAnswerId);
-
-        if (!quizAnswer.isCompleted()) {
-            quizAnswer.setCompleted(true);
-        }
-    }
-
-    public QuizAnswer checkQuiz(int quizAnswerId) {
-        QuizAnswer quizAnswer = quizAnswerRepository.findById(quizAnswerId)
-                .orElseThrow(() -> new TutorException(QUIZ_ANSWER_NOT_FOUND, quizAnswerId));
-
-        if (quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(DateHandler.now())) {
-            throw new TutorException(QUIZ_NOT_YET_AVAILABLE);
-        }
-
-        if (quizAnswer.getQuiz().getConclusionDate() != null && quizAnswer.getQuiz().getConclusionDate().isBefore(DateHandler.now().minusMinutes(10))) {
-            throw new TutorException(QUIZ_NO_LONGER_AVAILABLE);
-        }
-
-        return quizAnswer;
-    }
 
     @Retryable(
             value = {SQLException.class},
@@ -204,5 +186,15 @@ public class AnswerService {
     public void deleteQuizAnswer(QuizAnswer quizAnswer) {
         quizAnswer.remove();
         quizAnswerRepository.delete(quizAnswer);
+    }
+
+    @Retryable(
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void completeFinishedAnswers() {
+        quizAnswerRepository.findQuizAnswersNotCompleted().stream()
+                .filter(answer -> answer.getQuiz().getConclusionDate().isBefore(DateHandler.now()))
+                .forEach(QuizAnswer::complete);
     }
 }

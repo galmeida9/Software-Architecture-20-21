@@ -429,7 +429,7 @@ props.put(&quot;endTime&quot;, end2);</stringProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${students}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">30</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
@@ -768,7 +768,7 @@ props.put(&apos;username_&apos; + thread.toString, vars.get(&apos;username&apos;
           </SyncTimer>
           <hashTree/>
           <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Random Timer" enabled="false">
-            <stringProp name="ConstantTimer.delay">${__Random(1000, 10000)}</stringProp>
+            <stringProp name="ConstantTimer.delay">2</stringProp>
           </ConstantTimer>
           <hashTree/>
           <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Get encrypted data" enabled="true">

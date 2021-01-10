@@ -292,15 +292,6 @@ public class StatementService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 2000))
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void concludeTimedQuiz(int quizAnswerId) {
-        answerService.concludeTimedQuiz(quizAnswerId);
-    }
-
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 2000))
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void writeQuizAnswersAndCalculateStatistics() {
         //Set<Integer> quizzesToWrite = quizAnswerItemRepository.findQuizzesToWrite();
 

@@ -66,14 +66,6 @@ public class StatementService {
         quizAnswerItemRepository.save(quizAnswerItem);
     }
 
-    @Async("threadPoolTaskExecutor")
-    public void completeQuiz(int quizAnswerId) {
-        HttpEntity<Integer> request = new HttpEntity<>(quizAnswerId);
-
-        restTemplate.postForEntity(
-                "http://localhost:8080/quizzes/concludeTimed", request, Integer.class);
-    }
-
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 2000))

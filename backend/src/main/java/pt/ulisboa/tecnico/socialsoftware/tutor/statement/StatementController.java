@@ -73,12 +73,4 @@ public class StatementController {
 
          return statementService.concludeQuiz(statementQuizDto);
      }
-
-    @PostMapping("/quizzes/concludeTimed")
- //   @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#quizId, 'QUIZ.ACCESS')")
-    public void concludeTimedQuiz(Principal principal, @Valid @RequestBody int quizId) {
-//        User user = (User) ((Authentication) principal).getPrincipal();
-
-        statementService.concludeTimedQuiz(quizId);
-    }
 }
