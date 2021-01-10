@@ -187,7 +187,7 @@ To address this situation each time a user goes to the next question, we save it
 ### 3.3 Tests
 In these tests we adapted the previous ones, such that 10% of the students get the quiz by qr code, answer to 2 questions and then "exit the quiz", after that they get the quiz by qr code again, and finally they answer to the last 3 questions.
 
-Real scenario test:
+**Real scenario test:**
 * 300 students
 ![300 Students at the same time](report-resources/availability-300-rt.png)
 * 600 students
@@ -196,7 +196,7 @@ Real scenario test:
 ![1000 Students at the same time](report-resources/availability-1000-rt.png)
 
 
-All students at the same time:
+**All students at the same time:**
 * 300 students
 ![300 Students at the same time](report-resources/availability-300-st.png)
 * 600 students
@@ -233,25 +233,29 @@ We did the following to achieve the scenarios above:
   
 ### 4.3 Tests
 
-Scenario 1 test:
+**Scenario 1 test:**
+
 In this test, the student tries to conclude a quiz that he previously had already concluded.
 ![Scenario 1 test](report-resources/security-scenario-1.png)
 
-Scenario 2 test:
+**Scenario 2 test:**
+
 Here the student sends the answers of the questions in the concludeQuiz request in an order that is different from the one he received the questions in the getQuizByQrCode request.
 ![Scenario 2 test](report-resources/security-scenario-2.png)
 
-Scenario 3 test:
+**Scenario 3 test:**
+
 ![Scenario 3 test](report-resources/security-scenario-3.png)
 
-Scenario 4 test:
+**Scenario 4 test:**
+
 For this scenario, the student tries to submit an answer for a question that he previously had already submitted and confirmed that it was is final answer.
 ![Scenario 4 test](report-resources/security-scenario-4.png)
 
 
 Then we used the same tests from Performance and Scalabity to check how much our changes impacted the performance of the system.
 
-Real scenario test:
+**Real scenario test:**
 * 300 students
 ![300 Students at the same time](report-resources/security-300-rt.png)
 * 600 students
@@ -260,7 +264,7 @@ Real scenario test:
 ![1000 Students at the same time](report-resources/security-1000-rt.png)
 
 
-All students at the same time:
+**All students at the same time:**
 * 300 students
 ![300 Students at the same time](report-resources/security-300-st.png)
 * 600 students
