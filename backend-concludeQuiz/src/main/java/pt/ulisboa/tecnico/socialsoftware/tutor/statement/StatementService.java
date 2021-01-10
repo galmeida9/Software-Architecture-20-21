@@ -66,14 +66,6 @@ public class StatementService {
         quizAnswerItemRepository.save(quizAnswerItem);
     }
 
-    @Async("threadPoolTaskExecutor")
-    public void completeQuiz(int quizAnswerId) {
-        HttpEntity<Integer> request = new HttpEntity<>(quizAnswerId);
-
-        restTemplate.postForEntity(
-                "http://localhost:8080/quizzes/concludeTimed", request, Integer.class);
-    }
-
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 2000))
@@ -108,7 +100,13 @@ public class StatementService {
 
     private void confirmQuestionOrder(StatementQuizDto statementQuizDto) {
         List<StatementAnswerDto> answers = statementQuizDto.getAnswers();
-        List<StatementAnswerDto> order = quizQuestionOrderRepository.findQuestionOrderByQuizIdAndUser(statementQuizDto.getId(), statementQuizDto.getUsername()).get(0).getAnswersList();
+        List<QuizAnswerItemOrder> answerOrders = quizQuestionOrderRepository.findQuestionOrderByQuizIdAndUser(statementQuizDto.getId(), statementQuizDto.getUsername());
+
+        if (answerOrders.size() == 0) {
+            throw new TutorException(QUESTION_ORDER_NOT_FOUND);
+        }
+
+        List<StatementAnswerDto> order = answerOrders.get(0).getAnswersList();
 
         if (answers.size() != order.size()) {
             throw new TutorException(INVALID_SEQUENCE_FOR_QUESTION_ANSWER);
@@ -120,5 +118,7 @@ public class StatementService {
                 }
             }
         }
+
+        quizQuestionOrderRepository.delete(answerOrders.get(0));
     }
 }

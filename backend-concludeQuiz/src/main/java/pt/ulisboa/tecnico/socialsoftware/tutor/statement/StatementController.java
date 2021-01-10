@@ -36,7 +36,6 @@ public class StatementController {
     @PostMapping("/quizzes/{quizId}/conclude")
     public void concludeQuiz(@PathVariable int quizId, @RequestBody StatementQuizDto statementQuizDto) {
         statementService.concludeQuiz(statementQuizDto);
-        statementService.completeQuiz(statementQuizDto.getQuizAnswerId());
     }
 
     @PostMapping("/quizzes/{quizId}/order")

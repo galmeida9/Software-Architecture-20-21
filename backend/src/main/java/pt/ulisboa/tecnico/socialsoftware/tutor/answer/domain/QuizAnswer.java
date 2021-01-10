@@ -181,6 +181,10 @@ public class QuizAnswer implements DomainEntity {
         }
     }
 
+    public void complete() {
+        this.completed = true;
+    }
+
     public void remove() {
         user.getQuizAnswers().remove(this);
         user = null;
