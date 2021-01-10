@@ -113,9 +113,9 @@ In the chart above we can observe that the performance almost follows a linear d
 
 ## 2. Scalability
 
-Analysing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Initially we tried a monolithic approach, where each thread had a table to store the answers, but this approach only scaled vertically, and if it were horizontally scaled would make increasing the performance easier, the solution was micro services, since we only needed to boot more instances of a micro service and add more hardware to easily increase performance without much effort. Therefore, we made the following changes:
+Analyzing the test for performance, we detected a bottleneck in the access to the database while submitting an answer and concluding the quiz. Initially we tried a monolithic approach, where each thread had a table to store the answers, but this approach only scaled vertically, and if it were horizontally scaled would make increasing the performance easier, the solution was micro services, since we only needed to boot more instances of a micro service and add more hardware to easily increase performance without much effort. Therefore, we made the following changes:
 * Created a micro service to handle the submission of answers, with its own database to store the submissions.
-* Created a micro service to handle the submission of final quizzes' answers, with its own database to store the answers.
+* Created a micro service to handle the submission quizzes' submissions, with its own database to store the submissions.
 
 The backend now in order to get information about the answers has to communicate with the micro service that has that information to get it, has we can see in the architecture developed below.
 
@@ -185,7 +185,7 @@ A student initiates a quiz and answers to any number of questions (excluding the
 To address this situation each time a user goes to the next question, we save it in the *Submit Answer* micro service as a "*final answer*", in other words, as the final answer of the student to a given question, so if he exits the quiz because he misclicked or his browser crashed, if he tries to reenter the quiz, from his final answers we can reconstruct where he left on the quiz, leaving him exactly where he left. To achieve this the **Rollback** tactic was used.
   
 ### 3.3 Tests
-In these tests we adapted the previous ones, such that 10% of the students get the quiz by qr code, answer to 2 questions and then "exit the quiz" by getting the quiz by qr code again, finally they answer to the last 3 questions.
+In these tests we adapted the previous ones, such that 10% of the students get the quiz by qr code, answer to 2 questions and then "exit the quiz", after that they get the quiz by qr code again, and finally they answer to the last 3 questions.
 
 Real scenario test:
 * 300 students
@@ -222,6 +222,7 @@ All students at the same time:
 ![Availability Architecture](report-resources/security-architecture.png)
 
 We did the following to achieve the scenarios above:
+
 **1)** To solve this scenario we added a column in the table used to save each quiz submission (*quiz_answer_item*) to save the username of the student, then if someone tries to submit a quiz, we verify if there is already a submission for that quiz ID and for that user, if there is, it is declined. To do this the **limit access** tactic was used.
 
 **2)** For this, when the quiz starts, the frontend sends to the *Conclude Quiz* micro service the quiz with the order of the questions, so when we try to conclude a quiz, the order of the questions is checked before accepting the submission. To comply with the scenario, the **Limit Access** tactic was used.
